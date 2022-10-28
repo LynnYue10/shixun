@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.aim.questionnaire.dao.ProjectEntityMapper">
+  <resultMap id="BaseResultMap" type="com.aim.questionnaire.dao.entity.ProjectEntity">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
+    <result column="project_name" jdbcType="VARCHAR" property="projectName" />
+    <result column="created_by" jdbcType="CHAR" property="createdBy" />
+    <result column="creation_date" jdbcType="TIMESTAMP" property="creationDate" />
+    <result column="last_updated_by" jdbcType="CHAR" property="lastUpdatedBy" />
+    <result column="last_update_date" jdbcType="TIMESTAMP" property="lastUpdateDate" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.aim.questionnaire.dao.entity.ProjectEntity">
+
+  </resultMap>
+  <sql id="Base_Column_List">
+
+  </sql>
+  <sql id="Blob_Column_List">
+
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+
+  </delete>
+  <insert id="insert" parameterType="com.aim.questionnaire.dao.entity.ProjectEntity">
+
+  </insert>
+  <insert id="insertSelective" parameterType="com.aim.questionnaire.dao.entity.ProjectEntity">
+    insert into project_info(id,user_id,project_name,project_content,created_by,creation_date,last_update_date,last_updated_by) values
+  (#{id},#{userId},#{projectName},#{projectContent},#{createdBy},#{creationDate},#{lastUpdateDate},#{lastUpdatedBy})
+
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.aim.questionnaire.dao.entity.ProjectEntity">
+        update project_info
+    <set>
+      <if test="projectName != null and projectName!=''">
+        project_name = #{projectName},
+      </if>
+      <if test="projectContent != null and projectContent!=''">
+        project_content= #{projectContent},
+      </if>
+    </set>
+  where id = #{id}
+  </update>
+  
+  
+  <update id="updateByPrimaryKey" parameterType="com.aim.questionnaire.dao.entity.ProjectEntity">
+
+  </update>
+
+  <!--根据项目id删除项目-->
+  <delete id="deleteProjectById" parameterType="com.aim.questionnaire.dao.entity.ProjectEntity">
+  <!--"java.lang.String"-->
+  DELETE
+  FROM project_info
+  WHERE id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <!--查询项目列表-->
+  <select id="queryProjectList" parameterType="com.aim.questionnaire.dao.entity.ProjectEntity" resultType="map">
+        select  id,
+                project_name as projectName,
+                project_content AS projectContent,
+    created_by as createdBy,
+    creation_date as createDate
+               from
+          project_info
+       <where>
+         <if test="projectName!=null and projectName!=''">
+           and project_name = #{projectName}
+         </if>
+        
+       </where>
+   
+  </select>
+
+<!--查询项目列表-->
+  <select id="queryProjectListById" parameterType="com.aim.questionnaire.dao.entity.ProjectEntity" resultType="map">
+        select  id,
+                project_name as projectName,
+                project_content AS projectContent,
+    created_by as createdBy,
+    creation_date as createDate
+               from
+          project_info
+       <where>
+         <if test="projectName!=null and projectName!=''">
+           and project_name = #{projectName}
+         </if>
+         <if test="id!=null">
+           and id = #{id}
+         </if> 
+       </where>
+   
+  </select>
+
+  <!--查询全部项目的名字接口-->
+  <select id="queryAllProjectName" resultType="map">
+
+  </select>
+
+  <!--根据项目id查询项目名称-->
+  <select id="queryProjectNameById" parameterType="java.lang.String" resultType="java.lang.String">
+  SELECT project_name as projectName
+  FROM project_info
+  WHERE id=#{projectId,jdbcType=VARCHAR}
+  </select>
+  
+  
+  <!--根据项目名查询项目-->
+  <select id="queryProjectByProjectName" parameterType="java.lang.String" resultType="map">
+  SELECT id,user_id,project_name as projectName,project_content as projectContent,created_by as createdBy,creation_date as createDate,last_update_date,last_updated_by
+  FROM project_info
+  WHERE project_name=#{projectName,jdbcType=VARCHAR}
+  </select>
+  
+  
+</mapper>
