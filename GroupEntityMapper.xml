@@ -93,4 +93,12 @@
   </select>
    -->
   
+  <!--查询群组-->
+  <select id="queryGroups" parameterType="com.aim.questionnaire.dao.entity.GroupEntity" resultType="map">
+        select  groupname as groupName
+               from
+          group_info
+       
+  </select>
+  
 </mapper>
