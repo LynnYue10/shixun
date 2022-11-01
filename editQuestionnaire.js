@@ -20,7 +20,7 @@ var ifEditQuestType = getCookie('ifEditQuestType');
 
 $(function () {
     isLoginFun();
-    header();
+    userheader();
     $("#ctl01_lblUserName").text(getCookie('userName'));
     createTimePicker();
     $("#questionName").val(questionName);
@@ -32,14 +32,18 @@ $(function () {
 
 	var belongType = document.getElementById('belongType');
     belongType.options.length = 0;
-    var collOpt1 = document.createElement('option');
- 	var collOpt2 = document.createElement('option');
-    collOpt1.innerText = "调研";
-    collOpt1.value = "1";
-    belongType.appendChild(collOpt1);
-	collOpt2.innerText = "测试";
-	collOpt2.value = "2";
-	belongType.appendChild(collOpt2);
+	var collOpt2 = document.createElement('option');
+    var collOpt4 = document.createElement('option');
+   	var collOpt6 = document.createElement('option');
+    collOpt2.innerText = "开放式问卷";
+    collOpt2.value = "2";
+    collOpt4.innerText = "封闭式问卷";
+    collOpt4.value = "4";
+	collOpt6.innerText = "混合式问卷";
+    collOpt6.value = "6";
+    belongType.appendChild(collOpt2);
+    belongType.appendChild(collOpt4);
+	belongType.appendChild(collOpt6);
 	
 	var QuestStatus = document.getElementById('QuestStatus');
     QuestStatus.options.length = 0;
@@ -133,7 +137,7 @@ function modifyQuestSuccess(result) {
     if (result.code == '666') {
         layer.msg('修改成功', {icon: 1});
         setTimeout(function () {
-            window.location.href = 'myQuestionnaires.html';
+            window.location.href = 'questionnaireManage.html';
         }, 1000);
     } else if (result.code == "333") {
         layer.msg(result.message, {icon: 2});
