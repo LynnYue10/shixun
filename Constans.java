@@ -14,6 +14,7 @@ public class Constans {
 
     public static final String EXIST_MESSAGE="系统异常";
     public static final String DELETE_MESSAGE="删除成功";
+    public static final String RECOVER_MESSAGE="恢复成功";
     public static final String UPDATE_MESSAGE="修改成功";
     public static final String ADD_MESSAGE="添加成功";
     public static final String STATUS_MESSAGE="查询成功";
@@ -31,7 +32,6 @@ public class Constans {
     public static final String QUESTION_COUNT_MESSAGE="项目可以编辑";
     public static final String PROJECT_HAS_MESSAGE="已有同名项目，请重新输入";
 
-
     /**
      * Created by wln on 2018/8/7
      * Descriptions:答者状态码
@@ -39,7 +39,7 @@ public class Constans {
     public static final String GROUP_EXIST__CODE="7001";
     public static final String GROUP_EXIST_MESSAGE="该答者有群组，不可以删除";
     public static final String GROUP_EXIST_CANOTUP_MESSAGE="该答者有群组，不可以修改";
-    
+
     /**
      * Created by wln on 2018/8/8
      * Descriptions:问卷状态码
@@ -53,6 +53,10 @@ public class Constans {
     public static final String MODEL_DELETE_FAILstart="问卷已暂停，删除成功";
     public static final String MODEL_DELETE_FAILsend="问卷已发送，删除失败";
     public static final String MODEL_DELETE_FAILend="问卷已结束，删除失败";
+    public static final String DELETE_FAILend="问卷已分组，删除失败";
+    public static final String DELETE_COM_FAILend="问卷已分组，删除失败";
+    public static final String RECOVER_FAILend="恢复失败";
+    public static final String DELETE_FAILend_CODE="555";
 
     public static final String ANSWER_ZERO_MESSAGE = "此问卷没有答题人"; //问卷没有答题人
 
