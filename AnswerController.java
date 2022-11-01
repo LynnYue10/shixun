@@ -225,4 +225,122 @@ public class AnswerController {
         return httpResponseEntity;
     }
     
+    /* 
+	*//**
+		 * 用户登录
+		 * 
+		 * @param userEntity
+		 * @return
+		 *//*
+			 * @RequestMapping(value="/userLogin",method= RequestMethod.POST, headers =
+			 * "Accept=application/json") public HttpResponseEntity userLogin(@RequestBody
+			 * UserEntity userEntity) { HttpResponseEntity httpResponseEntity = new
+			 * HttpResponseEntity(); try {
+			 * 
+			 * List<UserEntity> hasUser = userEntityMapper.selectUserInfo(userEntity);
+			 * if(CollectionUtils.isEmpty(hasUser) ) {
+			 * httpResponseEntity.setCode(Constans.EXIST_CODE);
+			 * httpResponseEntity.setData(null);
+			 * httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE);
+			 * }else { httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+			 * httpResponseEntity.setData(userEntity);
+			 * httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE); } }
+			 * catch (Exception e) { logger.info("userLogin 用户登录>>>>>>>>>>>" +
+			 * e.getLocalizedMessage()); httpResponseEntity.setCode(Constans.EXIST_CODE);
+			 * httpResponseEntity.setMessage(Constans.EXIST_MESSAGE); } return
+			 * httpResponseEntity; }
+			 */
+//	/**
+//	 * 创建用户的基本信息
+//	 * 
+//	 * @param map
+//	 * @return
+//	 */
+//	@RequestMapping(value = "/addUserInfo", method = RequestMethod.POST, headers = "Accept=application/json")
+//	public HttpResponseEntity addUserInfo(@RequestBody Map<String, Object> map) {
+//		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+//		try {
+//			int result = userService.addUserInfo(map);
+//			if (result == 3) {
+//				httpResponseEntity.setCode(Constans.USER_USERNAME_CODE);
+//				httpResponseEntity.setMessage(Constans.USER_USERNAME_MESSAGE);
+//			} else {
+//				httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+//				httpResponseEntity.setMessage(Constans.ADD_MESSAGE);
+//			}
+//		} catch (Exception e) {
+//			logger.info("addUserInfo 创建用户的基本信息>>>>>>>>>>>" + e.getLocalizedMessage());
+//			httpResponseEntity.setCode(Constans.EXIST_CODE);
+//			httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+//		}
+//		return httpResponseEntity;
+//	}
+//
+//	/**
+//	 * 编辑用户的基本信息
+//	 * 
+//	 * @param map
+//	 * @return
+//	 */
+//	@RequestMapping(value = "/modifyUserInfo", method = RequestMethod.POST, headers = "Accept=application/json")
+//	public HttpResponseEntity modifyUserInfo(@RequestBody Map<String, Object> map) {
+//		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+//
+//		return httpResponseEntity;
+//	}
+//
+//	/**
+//	 * 根据用户id查询用户基本信息
+//	 * 
+//	 * @param userEntity
+//	 * @return
+//	 */
+//	@RequestMapping(value = "/selectUserInfoById", method = RequestMethod.POST, headers = "Accept=application/json")
+//	public HttpResponseEntity selectUserInfoById(@RequestBody UserEntity userEntity) {
+//		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+//
+//		return httpResponseEntity;
+//	}
+//
+//	/**
+//	 * 修改用户状态
+//	 * 
+//	 * @param map
+//	 * @return
+//	 */
+//	@RequestMapping(value = "/modifyUserStatus", method = RequestMethod.POST, headers = "Accept=application/json")
+//	public HttpResponseEntity modifyUserStatus(@RequestBody Map<String, Object> map) {
+//		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+//
+//		return httpResponseEntity;
+//	}
+//
+//	/**
+//	 * 删除用户信息
+//	 * 
+//	 * @param userEntity
+//	 * @return
+//	 */
+//	@RequestMapping(value = "/deleteUserInfoById", method = RequestMethod.POST, headers = "Accept=application/json")
+//	public HttpResponseEntity deteleUserInfoById(@RequestBody UserEntity userEntity) {
+//		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+//
+//		return httpResponseEntity;
+//	}
+//
+//	/**
+//	 * 用户没有权限
+//	 * 
+//	 * @return
+//	 */
+//	@RequestMapping(value = "/error")
+//	public HttpResponseEntity logout() {
+//		HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+//
+//		return httpResponseEntity;
+//	}
+    
+    
+    
+    
 }
