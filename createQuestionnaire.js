@@ -1,9 +1,10 @@
 var projectName = '';
 var projectId ='';
 var dataId = '';
+var username = getCookie('username');
 $(function () {
     isLoginFun();
-    header();
+    userheader();
     $("#ctl01_lblUserName").text(getCookie('userName'));
     projectName = getCookie('projectName');
 	projectId = getCookie('projectId');
@@ -25,12 +26,16 @@ $(function () {
 	
 	var collOpt2 = document.createElement('option');
     var collOpt4 = document.createElement('option');
-    collOpt2.innerText = "在校生";
+   	var collOpt6 = document.createElement('option');
+    collOpt2.innerText = "开放式问卷";
     collOpt2.value = "2";
-    collOpt4.innerText = "教师";
+    collOpt4.innerText = "封闭式问卷";
     collOpt4.value = "4";
+	collOpt6.innerText = "混合式问卷";
+    collOpt6.value = "6";
     belongType.appendChild(collOpt2);
     belongType.appendChild(collOpt4);
+	belongType.appendChild(collOpt6);
 	
 });
 
@@ -94,7 +99,7 @@ function importQuestion(type) {
     // type 1:历史问卷模板  2：调查类型模板
     if (type === '1') {
         //var url = '/queryHistoryQuestionnaire';
-		var url = '/queryAllQuestionnaireInfo';
+		var url = '/queryHistoryQuestionnaireInfo';
         var da = {
             //'projectId': getCookie('projectIdForCreate'),
 			'projectId': getCookie('ProjectId'),
@@ -228,7 +233,7 @@ function queryQuestionnaireMouldSuccess(res) {
                 // '                        <div class="details-info">问卷密码，红包抽奖</div>' +
                  '                    </div>' +
                  '                    <div class="clear dotted-line--solid"></div>' +
-                 '                    <a href="javascript:void(0)" class="btn btn-blue-frame editModal" onclick=\'editModal(' + '"' + res.data[i].id + '"' + ')\'>编辑</a>' +
+                 '                    <a href="javascript:void(0)" class="btn btn-blue-frame editModal" onclick=\'editModal(' + '"' + res.data[i].id + '"' + ',' + '"' + res.data[i].questionName + '"' + ',' + '"' + res.data[i].questionContent + '"'+ ')\'>编辑</a>' +
                  '                    <a href="javascript:void(0)" class="btn btn-blue-frame main__btn--new" style="left:71%" onclick=\'importModal(' + '"' + res.data[i].id + '"' + ',' + '"' + res.data[i].questionName + '"' + ',' + '"' + res.data[i].questionContent + '"'+','+ '"'+getCookie('projectIdForCreate') +'"' + ')\'>导入</a>' +
                  '                </div>';
              $("#typeQuestion").append(questionnaireModal_div);
@@ -275,6 +280,9 @@ function createModal() {
         'questionContent': questionContent,
         'startTime': "",
         'endTime': "",
+		'username':username,
+		'groupname':"模板",
+		'isdelete':"0",
         'dataId': $('#belongType').val(),
         'questionStop': '0'
     };
@@ -303,8 +311,10 @@ function viewModal(questionId) {
 }
 
 //编辑模板
-function editModal(questionId) {
+function editModal(questionId,questionName,questionContent) {
     var qId = $.base64.encode(questionId);
+	setCookie("questionName",questionName);
+	setCookie("questionContent",questionContent);
     var url = "designQuestionnaire.html?qId="+qId;//此处拼接内容
     // window.location.href = url;
     window.open(url)
@@ -323,7 +333,12 @@ function importModal(questionId, questionName, questionContent,projectId) {
     setCookie('TQuestionName', questionName);
     setCookie('TQuestionContent', questionContent);
     setCookie('projectIdForCreate', projectId);
+/*
+    setCookie('question', question);
+    setCookie('questionTitle', questionTitle);
+*/
     setCookie('dataId', dataId);
+	setCookie('username', username);
     window.location.href = 'namedQuestionnaire.html';
 }
 
@@ -349,15 +364,7 @@ function addQuestionnaireSuccess(res) {
         importQuestion(2)
         $("#questNameModal").val("")
         $("#questDescribeModal").val("")
-        // importQuestion(getCookie("hORt"))
-    //} else if (res.code == "333") {
-      //  layer.msg(res.message, {icon: 2});
-     //   setTimeout(function () {
-     //       window.location.href = 'login.html';
-     //   }, 1000)
-   // } else {
-    //    layer.msg(res.message, {icon: 2});
-   // }
+
 }
 
 //取消按钮
