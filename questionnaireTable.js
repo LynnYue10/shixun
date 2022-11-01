@@ -1,3 +1,4 @@
+var username = getCookie('userName')
 function getQueryVariable(variable)
 {
     var query = window.location.search.substring(1);
@@ -9,13 +10,32 @@ function getQueryVariable(variable)
     return(false);
 }
 
+
 $(function () {
     isLoginFun();
-    // header();
+    userheader();
     $("#ctl01_lblUserName").text(getCookie('userName'));
     var oTable = new relatedQuestionnaireTableInit();
     oTable.Init();
 });
+
+$(document).keydown(function (event) {
+    if (event.keyCode == 13) {
+        getQuestionnaireList();
+    }
+});
+
+/*$('#questionnaireManager').on("keydown", function (event) {
+    var keyCode = event.keyCode || event.which;
+    if (keyCode == "13") {
+        //console.log("1111")
+        event.preventDefault();
+    }
+});*/
+
+function getQuestionnaireList() {
+    $('#questionnaireTable').bootstrapTable('refresh');
+}
 
 window.operateEvents = {
     //编辑
@@ -38,7 +58,7 @@ function addFunctionAlty(value, row, index) {
     }
     btnText += "<button type=\"button\" id=\"btn_look\" onclick=\"questionnaireDetail(" + "'" + row.id + "')\" class=\"btn btn-default-g ajax-link\">详情</button>&nbsp;&nbsp;";
 
-    btnText += "<button type=\"button\" id=\"btn_stop" + row.id + "\" onclick=\"deleteQuestionnaire(" + "'" + row.id + "'" + ")\" class=\"btn btn-danger-g ajax-link\">删除</button>&nbsp;&nbsp;";
+    btnText += "<button type=\"button\" id=\"btn_stop" + row.id + "\" onclick=\"ModifyQuestionnaireIsDelete(" + "'" + row.id + "'" + ")\" class=\"btn btn-danger-g ajax-link\">删除</button>&nbsp;&nbsp;";
 
     return btnText;
 }
@@ -49,7 +69,7 @@ function relatedQuestionnaireTableInit() {
     //初始化Table
     oTableInit.Init = function () {
         $('#questionnaireTable').bootstrapTable({
-            url: httpRequestUrl + '/queryQuestionnaireByProjectId',         //请求后台的URL（*）
+            url: httpRequestUrl + '/showAllQuestionnaireInfo',         //请求后台的URL（*）
             method: 'POST',                      //请求方式（*）
             striped: true,                      //是否显示行间隔色
             cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
@@ -97,7 +117,7 @@ function relatedQuestionnaireTableInit() {
                 },
                 {
                     field: 'status',
-                    title: '问卷状态',
+                    title: '状态',
                     align: 'center'
                 },
                 {
@@ -108,7 +128,7 @@ function relatedQuestionnaireTableInit() {
                     formatter: addFunctionAlty//表格中增加按钮
                 }],
             responseHandler: function (res) {
-                // console.log(res);
+                console.log(res.data.list);
                 if (res.code == "666") {
                     var userInfo = res.data.list;
                     var NewData = [];
@@ -123,10 +143,11 @@ function relatedQuestionnaireTableInit() {
                             dataNewObj.questionName = userInfo[i].questionName;
                             dataNewObj.releaseTime = userInfo[i].releaseTime;
                             dataNewObj.questionStop = userInfo[i].questionStop;
-                            dataNewObj.status =dataNewObj.status = getStatus(
+/*                            dataNewObj.status =dataNewObj.status = getStatus(
                                 userInfo[i].questionStop, userInfo[i].startTime,
                                 userInfo[i].endTime, userInfo[i].releaseTime
-                            );
+                            );*/
+							dataNewObj.status = userInfo[i].groupname;
                             NewData.push(dataNewObj);
                         }
                         //console.log(NewData)
@@ -147,12 +168,12 @@ function relatedQuestionnaireTableInit() {
     // 得到查询的参数
     function queryParams(params) {
         // console.log(params);
-        var userName = $("#keyWord").val();
+        var questionnaireName = $("#keyWord").val();
         //console.log(userName);
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             pageNum: params.pageNumber,
             pageSize: params.pageSize,
-            projectId: getQueryVariable('projectId'),
+			questionnaireName:$("#keyWord").val()
             // orderBy: params.sortName,
             // sort: params.sortOrder
         };
@@ -261,6 +282,76 @@ function editQuestionnaire(questionnaireId) {
 
 }
 
+//删除问卷(修改状态为已被删除)
+
+function ModifyQuestionnaireIsDelete(questionnaireId){
+	    if(isQuestionnaireOpenOrReleased(questionnaireId)) {
+        return;
+    }
+
+
+		layer.confirm('您确认要删除此问卷吗？', {
+        btn: ['确定', '取消'] //按钮
+    }, function () {
+ commonAjaxPost(false, "/queryQuestionnaireById", {id: questionnaireId}, function (result) {
+        if (result.code === "666") {
+            var data = result.data;
+			var da ={
+				"id" : data.id,
+				"questionName":data.questionName,
+				"questionContent":data.questionContent,
+				"startTime":data.startTime,
+				"endTime":data.endTime,
+				"status":data.status,
+				"projectId":data.projectId,
+				"releaseTime":data.releaseTime,
+				"dataId":data.dataId,
+				"question":data.question,
+				"questionTitle":data.questionTitle,
+				"isdelete":'1',
+				"groupname":data.groupname,
+				"username":data.username
+			};
+			commonAjaxPost(true,'/ModifyQuestionnaireIsDelete',da,function(result){
+			if (result.code == '666') {
+       				 layer.msg(result.message, {icon: 1});
+     			     $("#questionnaireTable").bootstrapTable('refresh');
+    			} else if (result.code == "333") {
+      				  layer.msg(result.message, {icon: 2});
+       				setTimeout(function () {
+        			window.location.href = 'login.html';
+       				 }, 1000)
+   			 } else {
+        				alert("问卷已发布，无法更改！");
+   		 		}
+			});
+			
+        } else {
+            layer.msg(result.msg);
+        }
+    });
+    }, function () {
+    });
+
+   
+}
+
+/*//删除成功
+function Success(){
+	if (result.code == '666') {
+        layer.msg(result.message, {icon: 1});
+        $("#questionnaireTable").bootstrapTable('refresh');
+    } else if (result.code == "333") {
+        layer.msg(result.message, {icon: 2});
+        setTimeout(function () {
+        window.location.href = 'login.html';
+        }, 1000)
+    } else {
+        layer.msg(result.message, {icon: 2});
+    }
+	
+}
+*/
 
 // 删除问卷
 function deleteQuestionnaire(questionnaireId) {
@@ -340,4 +431,32 @@ function questionnaireDetail (questionnaireId) {
     setCookie('nameOfQuestionnaire', questionName);
 
     window.parent.open('sendQuestionnaire.html');
+}
+
+//创建问卷
+function createQuestionnaire() {
+    //alert("创建问卷")
+/*	deleteCookie("projectId");
+	deleteCookie("projectName");
+    setCookie("projectId", id);
+	setCookie("projectName", name);*/
+	setCookie('username',username);
+    window.location.href = "createQuestionnaire.html"
+}
+
+//查看删除的问卷
+function checkDeletedQuestionnaire() {
+    //alert("创建问卷")
+/*	deleteCookie("projectId");
+	deleteCookie("projectName");
+    setCookie("projectId", id);
+	setCookie("projectName", name);*/
+	setCookie('username',username);
+    window.location.href = "questionnaireRecycleBin.html"
+}
+
+//查询问卷
+function queryQuestionnaireByName(){
+	
+	
 }
