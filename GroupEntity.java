@@ -4,6 +4,8 @@ public class GroupEntity {
 
 	private String id;
 	private String groupname;
+	private String username;
+	
 	public String getId() {
 		return id;
 	}
@@ -16,10 +18,19 @@ public class GroupEntity {
 	public void setGroupname(String groupname) {
 		this.groupname = groupname;
 	}
-	public GroupEntity(String id, String groupname) {
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	
+	
+	public GroupEntity(String id, String groupname, String username) {
 		super();
 		this.id = id;
 		this.groupname = groupname;
+		this.username = username;
 	}
 	public GroupEntity() {
 		super();
@@ -30,6 +41,6 @@ public class GroupEntity {
 		super();
 		this.id = groupEntity.getId();
 		this.groupname = groupEntity.getGroupname();
-
+		this.username = groupEntity.getUsername();
 	}
 }
