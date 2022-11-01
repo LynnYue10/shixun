@@ -222,4 +222,10 @@
   FROM questionnaire
   WHERE id = #{id,jdbcType=VARCHAR}
   </delete>
+  
+  <select id="queryUserList" parameterType="java.lang.String" resultType="java.util.Map">
+    SELECT questionName,questionContent,groupName
+    FROM questionnaire
+    WHERE groupName = #{groupName,jdbcType=VARCHAR} OR groupName = "所有组"
+  </select>
 </mapper>
