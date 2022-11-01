@@ -40,6 +40,10 @@ public interface QuestionnaireMapper {
      void deleteQuestionnaireById(String id);
 
 	 List<Map<String, Object>> queryUserList(String groupName);
+	
+    int updateByPrimaryKeySelective(Questionnaire questionnaire);
+
+     int deleteModel(Questionnaire questionnaire);
      
      
 }
