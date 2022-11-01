@@ -33,6 +33,14 @@ public class Constans {
 
 
     /**
+     * Created by wln on 2018/8/7
+     * Descriptions:答者状态码
+     */
+    public static final String GROUP_EXIST__CODE="7001";
+    public static final String GROUP_EXIST_MESSAGE="该答者有群组，不可以删除";
+    public static final String GROUP_EXIST_CANOTUP_MESSAGE="该答者有群组，不可以修改";
+    
+    /**
      * Created by wln on 2018/8/8
      * Descriptions:问卷状态码
      */
