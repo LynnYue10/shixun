@@ -28,7 +28,6 @@ function header() {
         '                    <dd class="spinner-list">\n' +
         '                        <a href="javascript:void(0)" class="user-name">' +
         '                           <span id="ctl01_lblUserName"style="text-align:center">admin</span>' +
-/*        '                        </a>&nbsp;&nbsp;|&nbsp;&nbsp;<a class="user-name" href="userManage.html" id="gotoUserManage">用户管理</a>\n' +*/
         '                    </dd>\n' +
         '                </dl>\n' +
         '                <dl id="ctl01_hrefWjxout" class="user-info pull-left IE-8">\n' +
@@ -75,6 +74,46 @@ function header() {
     }
     
     $(".header").html(header);
+}
+
+function userheader() {
+    var urlPath = UrlSearch();
+    var userheader = "";
+    userheader += '<div class="header headerFixed">\n' +
+        '        <div class="my-container clearfix">\n' +
+        '            <div id="ctl01_divreturn" class="logo pull-left">\n';
+    if (urlPath != "myProject.html" && urlPath != "myQuestionnaires.html") {
+        userheader += '<a href="javascript:history.go(-1)" class="hover" id="hrefPGoBack"><em class="icon returnicon"></em>返回</a>';
+    }
+    userheader += '</div>\n' +
+        '            <div class="user-wrapper pull-right" id="userbutton">\n' +
+        '                <dl class="my-question pull-left">\n' +
+        '                    <dt class="box user-info">\n' +
+        '                        <a class="user-name" href="questionnaireManage.html"><i class="icon questions-icon"><em></em></i><span>我的问卷</span></a>\n' +
+        '                    </dt>\n' +
+        '                    <dd class="line"></dd>\n' +
+        '                </dl>\n' +
+        '                <dl class="user-info pull-left">\n' +
+        '                    <dt class="icon user-icon"><em></em></dt>\n' +
+        '                    <dd class="spinner-list">\n' +
+        '                        <a href="javascript:void(0)" class="user-name">' +
+        '                           <span id="ctl01_lblUserName"style="text-align:center">admin</span>' +
+        '                        </a>&nbsp;&nbsp;|&nbsp;&nbsp;<a class="user-name" href="userManage.html" id="gotoUserManage">答者管理</a>\n' +
+		'                        </a>&nbsp;&nbsp;|&nbsp;&nbsp;<a class="user-name" href="group.html" id="gotoUserManage">群组管理</a>\n' +
+        '                    </dd>\n' +
+        '                </dl>\n' +
+        '                <dl id="ctl01_hrefWjxout" class="user-info pull-left IE-8">\n' +
+        '                    <a class="user-name" href="javascript:void(0)" onclick=\'logOut()\'>\n' +
+        '                        <dt class="icon out-icon"></dt>\n' +
+        '                        <dd class="spinner-list" style="line-height: 3.2!important;">\n' +
+        '                            <span>退出</span>\n' +
+        '                        </dd>\n' +
+        '                    </a>\n' +
+        '                </dl>\n' +
+        '            </div>\n' +
+        '        </div>\n' +
+        '    </div>';
+    $(".userheader").html(userheader);
 }
 
 /**
