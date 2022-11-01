@@ -37,9 +37,41 @@ public class Questionnaire {
     
     private String questionTitle;
     
+    private String isdelete;
+    
+    private String groupname;
+    
+    private String username;
+   
     
     
-    public String getQuestion() {
+    public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getIsdelete() {
+		return isdelete;
+	}
+
+	public void setIsdelete(String isdelete) {
+		this.isdelete = isdelete;
+	}
+
+
+
+	public String getGroupname() {
+		return groupname;
+	}
+
+	public void setGroupname(String groupname) {
+		this.groupname = groupname;
+	}
+
+	public String getQuestion() {
 		return question;
 	}
 
@@ -141,8 +173,12 @@ public class Questionnaire {
 		return "Questionnaire [id=" + id + ", projectId=" + projectId + ", questionName=" + questionName
 				+ ", questionContent=" + questionContent + ", startTime=" + startTime + ", endTime=" + endTime
 				+ ", releaseTime=" + releaseTime + ", dataId=" + dataId + ", question=" + question + ", questionTitle="
-				+ questionTitle + ", status=" + status + "]";
+				+ questionTitle + ", isdelete=" + isdelete + ", groupname=" + groupname + ", username=" + username
+				+ ", status=" + status + "]";
 	}
+
+	
+
 
 	
 
