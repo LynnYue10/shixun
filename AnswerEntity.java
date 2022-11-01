@@ -4,8 +4,8 @@ public class AnswerEntity {
 	private String id;
 	private String answername;
 	private String password;
-	private String groupname; 
-	private String username; 
+	private String groupname;
+	private String username;
 	private String isdelete;
 	public String getId() {
 		return id;
@@ -31,6 +31,9 @@ public class AnswerEntity {
 	public void setGroupname(String groupname) {
 		this.groupname = groupname;
 	}
+	
+	
+	
 	public String getUsername() {
 		return username;
 	}
@@ -43,14 +46,28 @@ public class AnswerEntity {
 	public void setIsdelete(String isdelete) {
 		this.isdelete = isdelete;
 	}
-	
-	@Override
-	public String toString() {
-		return "AnswerEntity [id=" + id + ", answername=" + answername + ", password=" + password + ", groupname="
-				+ groupname + ", username=" + username + ", isdelete=" + isdelete + "]";
+	public AnswerEntity(String id, String answername, String password, String groupname, String username,
+			String isdelete) {
+		super();
+		this.id = id;
+		this.answername = answername;
+		this.password = password;
+		this.groupname = groupname;
+		this.username = username;
+		this.isdelete = isdelete;
+	}
+	public AnswerEntity() {
 	}
 	
-	
+	public AnswerEntity(AnswerEntity answerEntity) {
+		super();
+		this.id = answerEntity.getId();
+		this.answername = answerEntity.getAnswername();
+		this.password = answerEntity.getPassword();
+		this.groupname = answerEntity.getGroupname();
+		this.username = answerEntity.getUsername();
+		this.isdelete = answerEntity.getIsdelete();
+	}
 	
 	
 }
