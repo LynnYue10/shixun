@@ -6,6 +6,8 @@
     <result column="name" jdbcType="VARCHAR" property="questionName" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="project_id" jdbcType="VARCHAR" property="projectId" />
+    <result column="groupname" jdbcType="VARCHAR" property="groupName" />
+    <result column="username" jdbcType="VARCHAR" property="userName" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.aim.questionnaire.dao.entity.ProjectEntity">
 
