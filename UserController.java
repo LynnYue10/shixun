@@ -3,6 +3,7 @@ package com.aim.questionnaire.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.aim.questionnaire.dao.entity.AdminEntity;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.session.Session;
@@ -41,25 +42,60 @@ public class UserController {
    
     /**
      * 用户登录
-     * @param userEntity
+     * @param map
      * @return
      */
     @RequestMapping(value="/userLogin",method= RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity userLogin(@RequestBody UserEntity userEntity) {
+//        System.out.println(userEntity.toString());
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
         try {
-          
-            List<UserEntity> hasUser = userEntityMapper.selectUserInfo(userEntity);
-            if(CollectionUtils.isEmpty(hasUser) ) {
-            	httpResponseEntity.setCode(Constans.EXIST_CODE);
-            	httpResponseEntity.setData(null);
-            	httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE);
-            }else {
-            	httpResponseEntity.setCode(Constans.SUCCESS_CODE);
-            	httpResponseEntity.setData(userEntity);
-            	httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE);
+
+            List<UserEntity> users = userEntityMapper.selectUserInfo(userEntity);
+            List<UserEntity> user = userEntityMapper.selectUserInfoByPh(userEntity);
+            System.out.println(users.size());
+            boolean no_Users=CollectionUtils.isEmpty(users);
+            boolean no_User= CollectionUtils.isEmpty(user);
+            if(no_Users==false){
+                if(users.get(0).getPassword().equals(userEntity.getPassword())){
+                    httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+                    httpResponseEntity.setData(null);
+                    httpResponseEntity.setMessage(Constans.LOGIN_MESSAGE);
+                }
+
+                else {
+                    httpResponseEntity.setCode(Constans.EXIST_CODE);
+                    httpResponseEntity.setData(users);
+                    httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE);
+                }
             }
+            if (no_User==false){
+                if(user.get(0).getPassword().equals(userEntity.getPassword())){
+                    System.out.println(111);
+                    httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+                    httpResponseEntity.setData(null);
+                    httpResponseEntity.setMessage(Constans.LOGIN_MESSAGE);
+                }
+                else {
+                    System.out.println(user.get(0).getPassword());
+                    System.out.println(222);
+                    httpResponseEntity.setCode(Constans.EXIST_CODE);
+                    httpResponseEntity.setData(users);
+                    httpResponseEntity.setMessage(Constans.LOGIN_USERNAME_PASSWORD_MESSAGE);
+                }
+            }
+            else if(no_Users==true&&no_User==true){
+                System.out.println(11111);
+                String code_Set=Constans.EXIST_CODE;
+                httpResponseEntity.setCode(code_Set);
+                httpResponseEntity.setData(null);
+                String message_Set=Constans.LOGIN_USERNAME_PASSWORD_MESSAGE;
+                httpResponseEntity.setMessage(message_Set);
+            }
+
+
         } catch (Exception e) {
+            logger.error("ui改版-首页信息查询失败",e);
             logger.info("userLogin 用户登录>>>>>>>>>>>" + e.getLocalizedMessage());
             httpResponseEntity.setCode(Constans.EXIST_CODE);
             httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
@@ -75,9 +111,20 @@ public class UserController {
     @RequestMapping(value = "/queryUserList",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity queryUserList(@RequestBody Map<String,Object> map) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        PageInfo pageinfo = userService.queryUserList(map);
-        httpResponseEntity.setData(pageinfo);
-        httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+        try{
+            List<Map<String,Object>> users=userEntityMapper.queryUserList(map);
+
+            httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+            PageInfo pageinfo=userService.queryUserList(map);
+            httpResponseEntity.setData(userService.queryUserList(map));
+            httpResponseEntity.setData(pageinfo);
+            httpResponseEntity.setMessage(Constans.STATUS_MESSAGE);
+
+        }catch(Exception e){
+            logger.info("用户查询>>>>>>>>>>>"+e.getLocalizedMessage());
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+        }
         return httpResponseEntity;
     }
     /**
@@ -89,16 +136,27 @@ public class UserController {
     public HttpResponseEntity addUserInfo(@RequestBody Map<String,Object> map) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
         try {
-            int result = userService.addUserInfo(map);
-            if(result == 3) {
+            int if_Exist = userService.addUserInfo(map);
+            System.out.println(if_Exist);
+            if(if_Exist == 3) {
                 httpResponseEntity.setCode(Constans.USER_USERNAME_CODE);
                 httpResponseEntity.setMessage(Constans.USER_USERNAME_MESSAGE);
+            }else if(if_Exist==4){
+                httpResponseEntity.setCode(Constans.USER_USERNAME_CODE);
+                httpResponseEntity.setData(null);
+                httpResponseEntity.setMessage(Constans.USER_PHONENUMBER_MESSAGE);
+            }else if(if_Exist==5) {
+                httpResponseEntity.setCode(Constans.USER_USERNAME_CODE);
+                httpResponseEntity.setData(null);
+                httpResponseEntity.setMessage(Constans.USER_PHONE_MESSAGE);
             }else {
                 httpResponseEntity.setCode(Constans.SUCCESS_CODE);
                 httpResponseEntity.setMessage(Constans.ADD_MESSAGE);
             }
         } catch (Exception e) {
-            logger.info("addUserInfo 创建用户的基本信息>>>>>>>>>>>" + e.getLocalizedMessage());
+            e.printStackTrace();
+            String user_Info=e.getLocalizedMessage();
+            logger.info("addUserInfo 创建用户的基本信息>>>>>>>>>>>" + user_Info);
             httpResponseEntity.setCode(Constans.EXIST_CODE);
             httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
         }
@@ -113,7 +171,34 @@ public class UserController {
     @RequestMapping(value = "/modifyUserInfo",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity modifyUserInfo(@RequestBody Map<String,Object> map) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+        String id = (String) map.get("id");
+        System.out.println(id);
+//        int ifcan = userService.selectUserInfoById(id);
+        try {
+//            if(ifcan==1) {
+            int if_Exist = userService.modifyUserInfo(map);
+            System.out.println(if_Exist);
+            if(if_Exist == 3) {
+                httpResponseEntity.setCode(Constans.USER_USERNAME_CODE);
+                httpResponseEntity.setMessage(Constans.USER_USERNAME_MESSAGE);
+            }
+            else if(if_Exist ==4){
+                httpResponseEntity.setCode(Constans.USER_PHONE_CODE);
+                httpResponseEntity.setMessage(Constans.USER_PHONE_MESSAGE);
+            } else{
+                httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+                httpResponseEntity.setMessage(Constans.ADD_MESSAGE);
+                userService.modifyUserInfo(map);
+                httpResponseEntity.setCode("666");
+                httpResponseEntity.setMessage(Constans.UPDATE_MESSAGE);
+            }
+
+        } catch (Exception e) {
+            String user_Info=e.getLocalizedMessage();
+            logger.info("addUserInfo 创建用户的基本信息>>>>>>>>>>>" + user_Info);
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
+        }
         return httpResponseEntity;
     }
 
@@ -126,7 +211,7 @@ public class UserController {
     @RequestMapping(value = "/selectUserInfoById",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity selectUserInfoById(@RequestBody UserEntity userEntity) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+
         return httpResponseEntity;
     }
 
@@ -149,9 +234,20 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/deleteUserInfoById",method = RequestMethod.POST, headers = "Accept=application/json")
-    public HttpResponseEntity deteleUserInfoById(@RequestBody UserEntity userEntity) {
+    public HttpResponseEntity deleteUserInfoById(@RequestBody UserEntity userEntity) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        
+        System.out.println("Controller准备删除");
+        System.out.println(userEntity.toString());
+        int if_Exist= userService.deleteUserInfoById(userEntity);
+        System.out.println("controller删除");
+        if(if_Exist==3){
+            httpResponseEntity.setCode(Constans.EXIST_CODE);
+            httpResponseEntity.setMessage(Constans.PROJECT_EXIST_MESSAGE);
+        }else {
+            httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+
+            httpResponseEntity.setMessage(Constans.DELETE_MESSAGE);
+        }
         return httpResponseEntity;
     }
 
