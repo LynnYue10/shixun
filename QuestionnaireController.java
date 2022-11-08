@@ -95,7 +95,7 @@ public class QuestionnaireController {
     
     
     /**
-     * 查询相同类型的历史问卷
+     * 查询全部相同类型的问卷
      * @param questionnaireEntity
      * @return
      */
@@ -103,7 +103,7 @@ public class QuestionnaireController {
     public HttpResponseEntity queryHistoryQuestionnaire(@RequestBody Questionnaire questionnaire) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
         try {
-            List<Map<String, Object>> list = questionnaireService.queryQuestionnaireInfo(questionnaire);
+            List<Map<String, Object>> list = questionnaireService.queryAllQuestionnaireInfo();
             List<Map<String, Object>> history = new ArrayList<Map<String,Object>>();
             for(Map<String, Object> m:list) {
             	if(!m.get("groupname").equals("模板")) {
@@ -210,34 +210,6 @@ public class QuestionnaireController {
     }
     
     /**
-     * 根据id判断问卷是否为模板或已发送
-     * @param questionnaire
-     * @return
-     */
-    @RequestMapping(value = "/judgeQuestionnaireById", method = RequestMethod.POST, headers = "Accept=application/json")
-    public HttpResponseEntity judgeQuestionnaireById(@RequestBody Questionnaire questionnaire) {
-        HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        try {
-            Map<String, Object> map = questionnaireService.queryQuestionnaireById(questionnaire.getId());
-            if(map.get("groupname").equals("模板")) {
-            	httpResponseEntity.setCode(Constans.EXIST_CODE);
-                httpResponseEntity.setMessage(Constans.MODEL_FAILend_MESSAGE);
-            }else {
-            	httpResponseEntity.setCode(Constans.SUCCESS_CODE);
-                httpResponseEntity.setMessage(Constans.STATUS_MESSAGE);
-                httpResponseEntity.setData(map);
-            }
-            	
-        } catch (Exception e) {
-            logger.error("query questionnaire error", e);
-            httpResponseEntity.setCode(Constans.EXIST_CODE);
-            httpResponseEntity.setMessage(Constans.EXIST_MESSAGE);
-        }
-        return httpResponseEntity;
-    }
-    
-    
-    /**
      * 根据id查找删除的问卷
      * @param questionnaire
      * @return
@@ -273,6 +245,7 @@ public class QuestionnaireController {
             httpResponseEntity.setMessage(Constans.STOP_EXIT_UPDATE_MESSAGE);
            }else if(questionnaire.getStatus().equals("2")){
             Date releasetime = new Date();
+            System.out.println(releasetime);
             questionnaire.setReleaseTime(releasetime);
             questionnaireService.modifyQuestionnaireInfo(questionnaire);
                httpResponseEntity.setCode(Constans.SUCCESS_CODE);
@@ -303,27 +276,6 @@ public class QuestionnaireController {
           httpResponseEntity.setMessage(Constans.DELETE_FAILend);	
         }
         
-        return httpResponseEntity;
-    }
-    
-    /**
-     * 发送前保存问卷信息
-     * @param questionnaire
-     * @return
-     */
-    @RequestMapping(value = "/addSendQuestionnaire", method = RequestMethod.POST, headers = "Accept=application/json")
-    public HttpResponseEntity addSendQuestionnaire(@RequestBody Questionnaire questionnaire) {
-    	int result ;
-        HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
-        	result = questionnaireService.modifySendQuestionnaire(questionnaire);
-        	if(result == 0) {
-        		httpResponseEntity.setCode(Constans.EXIST_CODE);
-                httpResponseEntity.setMessage(Constans.DETAIL_FAILend_MESSAGE);
-        	}else {
-        		httpResponseEntity.setCode(Constans.SUCCESS_CODE);
-                httpResponseEntity.setMessage(Constans.DELETE_MESSAGE);
-        	}
-        	
         return httpResponseEntity;
     }
     
@@ -393,7 +345,7 @@ public class QuestionnaireController {
     public HttpResponseEntity queryQuestionnaireMould(@RequestBody Questionnaire questionnaire) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
         try {
-            List<Map<String, Object>> list = questionnaireService.queryQuestionnaireInfo(questionnaire);
+            List<Map<String, Object>> list = questionnaireService.queryAllQuestionnaireInfo();
             List<Map<String, Object>> model = new ArrayList<Map<String,Object>>();
             for(Map<String, Object> m :list) {
              if(m.get("groupname").equals("模板")) {
