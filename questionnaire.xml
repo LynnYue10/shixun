@@ -48,9 +48,10 @@
   </select>
   
    <insert id="addQuestionnaire" parameterType="map">
-   	insert into questionnaire(id,questionName,status,project_id,questionContent,startTime,endTime,releaseTime,dataId,question,questionTitle,isdelete,groupname,username) values
- 	(#{id},#{questionName},#{status},#{projectId},#{questionContent},#{startTime},#{endTime},#{releaseTime},#{dataId},#{question},#{questionTitle},#{isdelete},#{groupname},#{username})
+   	insert into questionnaire(id,questionName,status,project_id,questionContent,startTime,endTime,releaseTime,dataId,question,questionTitle,isdelete,groupname,username,second,times) values
+ 	(#{id},#{questionName},#{status},#{projectId},#{questionContent},#{startTime},#{endTime},#{releaseTime},#{dataId},#{question},#{questionTitle},#{isdelete},#{groupname},#{username},#{second},#{times})
    </insert>
+   
   
    <!-- 获取项目下问卷列表 --> 
  	<select id="queryQuestionnaireByProjectId" parameterType="map" resultType="java.util.Map">
@@ -59,44 +60,55 @@
  		where project_id = #{projectId}
  	</select>
  	
+ 
+ 
  	<!--查询所有问卷-->
     <select id="selectAllQuestionnaire" resultType="java.util.Map">
         SELECT
-            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username
+            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username,second,times
         FROM questionnaire
-        WHERE isdelete = "0"
+        WHERE isdelete = "0" AND username=#{username}
     </select>
+
+    <!--查询所有问卷-->
+    <select id="queryQuestionnaireInfo" parameterType="com.aim.questionnaire.dao.entity.Questionnaire" resultType="java.util.Map">
+        SELECT
+            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username,second,times
+        FROM questionnaire
+        WHERE isdelete = "0" AND username=#{username}
+    </select>
+    
     
     <!--查询所有未被删除的问卷-->
     <select id="queryQuestionnaireList" parameterType="map" resultType="java.util.Map">
         SELECT
-            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username
+            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username,second,times
         FROM questionnaire
-        WHERE isdelete = "0"
+        WHERE isdelete = "0" AND username=#{username}
     </select>
     
     <!--查询所有被删除的问卷-->
     <select id="queryDeletedQuestionnaireList" parameterType="map" resultType="java.util.Map">
         SELECT
-            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username
+            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username,second,times
         FROM questionnaire
-        WHERE isdelete = "1"
+        WHERE isdelete = "1" AND username=#{username}
     </select>
     
-    <!--模糊查询未被删除的问卷-->
+   <!--模糊查询未被删除的问卷-->
     <select id="queryQuestionnaireByName" parameterType="map" resultType="java.util.Map">
         SELECT
-            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username
+            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username,second,times
         FROM questionnaire
-        WHERE  isdelete = "0" AND questionName like '%${questionnaireName}%'
+        WHERE  isdelete = "0" AND questionName like '%${questionnaireName}%' AND username=#{username}
     </select>
     
-    <!--模糊查询被删除的问卷-->
+   <!--模糊查询被删除的问卷-->
     <select id="queryDeletedQuestionnaireByName" parameterType="map" resultType="java.util.Map">
         SELECT
-            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username
+            id,questionName,status,project_id as projectId,questionContent,startTime,releaseTime,endTime,dataId,question,questionTitle,isdelete,groupname,username,second,times
         FROM questionnaire
-        WHERE  isdelete = "1" AND questionName like '%${questionnaireName}%'
+        WHERE  isdelete = "1" AND questionName like '%${questionnaireName}%' AND username=#{username}
     </select>
     
   <!-- 获取未被删除的问卷的id -->
@@ -138,7 +150,9 @@
             questionTitle AS questionTitle,
             isdelete AS isdelete,
             groupname AS groupname,
-            username AS username
+            username AS username,
+            second AS second,
+            times AS times
         FROM questionnaire
         WHERE id = #{id,jdbcType=VARCHAR} AND isdelete="1"
     </select>
@@ -190,6 +204,12 @@
             </if>
             <if test="username != null">
                 username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="second != null">
+                second = #{second},
+            </if>
+            <if test="times != null">
+                times = #{times},
             </if>
         </set>
         where id = #{id,jdbcType=VARCHAR}
