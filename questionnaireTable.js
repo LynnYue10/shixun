@@ -58,6 +58,8 @@ function addFunctionAlty(value, row, index) {
     }
     btnText += "<button type=\"button\" id=\"btn_look\" onclick=\"questionnaireDetail(" + "'" + row.id + "')\" class=\"btn btn-default-g ajax-link\">详情</button>&nbsp;&nbsp;";
 
+	btnText += "<button type=\"button\" id=\"btn_look\" onclick=\"preview(" + "'" + row.id + "')\" class=\"btn btn-default-g ajax-link\">预览</button>&nbsp;&nbsp;";
+
     btnText += "<button type=\"button\" id=\"btn_stop" + row.id + "\" onclick=\"ModifyQuestionnaireIsDelete(" + "'" + row.id + "'" + ")\" class=\"btn btn-danger-g ajax-link\">删除</button>&nbsp;&nbsp;";
 
     return btnText;
@@ -173,7 +175,8 @@ function relatedQuestionnaireTableInit() {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             pageNum: params.pageNumber,
             pageSize: params.pageSize,
-			questionnaireName:$("#keyWord").val()
+			questionnaireName:$("#keyWord").val(),
+			username:getCookie('userName')
             // orderBy: params.sortName,
             // sort: params.sortOrder
         };
@@ -415,22 +418,28 @@ function changeQuestionnaireStatus (questionnaireId) {
 function questionnaireDetail (questionnaireId) {
     var dataId;
     var questionName;
-    commonAjaxPost(false, "/queryQuestionnaireById", {id: questionnaireId}, function (result) {
+    commonAjaxPost(false, "/judgeQuestionnaireById", {id: questionnaireId}, function (result) {
+		console.log(result);
         if (result.code === "666") {
             var data = result.data;
+			console.log(data)
             dataId = data.dataId;
             questionName = data.questionName;
+			questionContent = data.questionContent;
+			setCookie('questionnaireId', questionnaireId);
+    		setCookie('questionId', questionnaireId);
+    		setCookie('dataId', dataId);
+    		setCookie('questionName', questionName);
+			setCookie('nameOfQuestionnaire', questionName);
+			setCookie('questionContent', questionContent);
+			setCookie('userName',username);
+   			 window.parent.open('sendQuestionnaire.html');
         } else {
-            layer.msg(result.msg);
+            layer.msg(result.message);
         }
     });
 
-    setCookie('questionnaireId', questionnaireId);
-    setCookie('questionId', questionnaireId);
-    setCookie('dataId', dataId);
-    setCookie('nameOfQuestionnaire', questionName);
-
-    window.parent.open('sendQuestionnaire.html');
+    
 }
 
 //创建问卷
@@ -442,6 +451,9 @@ function createQuestionnaire() {
 	setCookie("projectName", name);*/
 	setCookie('username',username);
     window.location.href = "createQuestionnaire.html"
+}
+function preview(questionId){
+	window.open("previewQuestionnaire.html?i=" + questionId);
 }
 
 //查看删除的问卷
