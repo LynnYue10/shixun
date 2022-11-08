@@ -42,10 +42,32 @@ public class Questionnaire {
     private String groupname;
     
     private String username;
+    
+    private int second;
+    
+    private int times;
+    
+    
    
     
     
-    public String getUsername() {
+    public int getSecond() {
+		return second;
+	}
+
+	public void setSecond(int second) {
+		this.second = second;
+	}
+
+	public int getTimes() {
+		return times;
+	}
+
+	public void setTimes(int times) {
+		this.times = times;
+	}
+
+	public String getUsername() {
 		return username;
 	}
 
@@ -174,8 +196,10 @@ public class Questionnaire {
 				+ ", questionContent=" + questionContent + ", startTime=" + startTime + ", endTime=" + endTime
 				+ ", releaseTime=" + releaseTime + ", dataId=" + dataId + ", question=" + question + ", questionTitle="
 				+ questionTitle + ", isdelete=" + isdelete + ", groupname=" + groupname + ", username=" + username
-				+ ", status=" + status + "]";
+				+ ", second=" + second + ", times=" + times + ", status=" + status + "]";
 	}
+
+
 
 	
 
