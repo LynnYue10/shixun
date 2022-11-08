@@ -57,6 +57,8 @@ public class Constans {
     public static final String DELETE_COM_FAILend="问卷已分组，删除失败";
     public static final String RECOVER_FAILend="恢复失败";
     public static final String DELETE_FAILend_CODE="555";
+    public static final String DETAIL_FAILend_MESSAGE="该问卷已发送";
+    public static final String MODEL_FAILend_MESSAGE="模板无法发送";
 
     public static final String ANSWER_ZERO_MESSAGE = "此问卷没有答题人"; //问卷没有答题人
 
