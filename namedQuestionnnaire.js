@@ -1,13 +1,11 @@
-/**
- * Created by Amy on 2018/8/6.
- */
 var question = '';
 var projectId = getCookie('projectId');
 var questionTitle = '';
 var da1 = {};
+var username = getCookie('username');
 $(function () {
     isLoginFun();
-    header();
+    userheader();
     $("#ctl01_lblUserName").text(getCookie('userName'));
 	projectId = getCookie('projectId');
     createDtePicker();
@@ -102,7 +100,8 @@ function quickCreate() {
             'endTime': dateChange(questionendTime),
             'questionStop': '5',
             'dataId': getCookie('dataId'),
-            'projectId': projectId
+            'projectId': projectId,
+			'username':getCookie('username')
         };
         if (getCookie('TProjectId') != undefined) {    //创建问卷
             da.projectId = getCookie('TProjectId');
@@ -124,6 +123,7 @@ function quickCreate() {
             'endTime': dateChange(questionendTime),
             'questionStop': '5',
             'dataId': getCookie('dataId'),
+			'username':getCookie('username'),
             //'projectId': getCookie('ProjectId')
 			'projectId': projectId
         };
@@ -138,7 +138,7 @@ function addQuestionnaireSuccess(res) {
         layer.msg(res.message, {icon: 1});
         deleteCookie('dataId');
  		setTimeout(function () {
-           window.location.href = 'myQuestionnaires.html'
+           window.location.href = 'questionnaireManage.html'
         }, 1000)
     } else if (res.code == "333") {
         layer.msg(res.message, {icon: 2});
