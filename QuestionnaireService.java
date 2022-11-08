@@ -99,15 +99,6 @@ public class QuestionnaireService {
 	public List<Map<String, Object>> queryAllQuestionnaireInfo() {
 		return questionnaireMapper.selectAllQuestionnaire();
 	}
-	
-	/**
-	 * 查询全部问卷
-	 * 
-	 * @return
-	 */
-	public List<Map<String, Object>> queryQuestionnaireInfo(Questionnaire questionnaire) {
-		return questionnaireMapper.queryQuestionnaireInfo(questionnaire);
-	}
 
 	/**
 	 * 根据问卷id查询问卷信息
@@ -187,42 +178,14 @@ public class QuestionnaireService {
 	 * @return
 	 */
 	public int modifyQuestionnaireInfo(Questionnaire questionnaire) {
+
 		// 设置修改时间
-	
+		// Date date = DateUtil.getCurrentTime();
+		// questionnaireEntity.setLastUpdateDate(date);
 		int result = questionnaireMapper.modifyQuestionnaireInfo(questionnaire);
 		// return questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
 		return result;
 	}
-	
-	/**
-	 *判断是否可以发送并修改信息修改问卷信息
-	 * 
-	 * @param questionnaire
-	 * @return
-	 */
-	public int modifySendQuestionnaire(Questionnaire questionnaire) {
-		int result = 0;
-		Map<String,Object> target = questionnaireMapper.selectQuestionnaireById(questionnaire.getId());
-		if(target.get("groupname").equals("未发送")) {
-			// 设置修改时间
-			if(questionnaire.getReleaseTime() == null) {
-				 Date date = DateUtil.getCurrentDate();
-					// questionnaireEntity.setLastUpdateDate(date);
-					questionnaire.setReleaseTime(date);
-			}
-			
-			result = questionnaireMapper.modifyQuestionnaireInfo(questionnaire);
-			// return questionnaireMapper.updateByPrimaryKeySelective(questionnaire);
-			return result;
-		}else {
-			result=0;
-		}
-		
-		return result;
-	}
-	
-	
-	
 
 	public int deleteQuestionnaireById(String id) throws ParseException {
         Map<String,Object> m=questionnaireService.queryQuestionnaireById(id);
@@ -233,9 +196,6 @@ public class QuestionnaireService {
         questionnaireMapper.deleteQuestionnaireById(id);
            return 0;
     }
-	
-	
-	
 	
 	public int deleteQuestionnaireByIdCompletely(String id) throws ParseException {
     Map<String,Object> m=questionnaireService.queryQuestionnaireById(id);
@@ -259,8 +219,6 @@ public class QuestionnaireService {
 		return 1;
 	}
 
-	
-	
 	public int deleteModel(Questionnaire questionnaire) {
 		return questionnaireMapper.deleteModel(questionnaire);
 
