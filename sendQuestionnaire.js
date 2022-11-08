@@ -1,6 +1,7 @@
 var persons = []; //传入调查人员信息
 var sendTime = "";
 var questionId = getCookie("questionId");
+
 var dataId = getCookie("dataId");  // 在校生：2；毕业生：3；教师：4；用人单位：5
 var nameOfQuestionnaire = getCookie("nameOfQuestionnaire");
 
@@ -24,92 +25,48 @@ window.operateEvents = {
     }
 };
 
-//不是用人单位的列名
-var columnsForCompany =[{
-    checkbox: true,
-    visible: false
-}, {
-    field: 'no',
-    title: '序号',
-    align: 'center',
-}, {
-    field: 'answerNum',
-    title: '答题人编号',
-    align: 'center',
-    width: '200px'
-},
-    {
-        field: 'answerName',
-        title: '姓名',
-        align: 'center'
-    }, {
-        field: 'answerBelong',
-        title: '学校',
-        align: 'center'
-    }, {
-        field: 'answerPhone',
-        title: '手机号码',
-        align: 'center'
-    },
-    {
-        field: 'answerEmail',
-        title: '邮箱',
-        align: 'center'
-    }, {
-        field: 'operation',
-        title: '操作',
-        align: 'center',
-        events: operateEvents,//给按钮注册事件
-        formatter: addFunctionAlty//表格中增加按钮
-    }]
 
-
-if (dataId == "2") {
-    $("#getDownLoadBtn").prepend("<a style=\"margin-right: 20px;\" href=\"../在校生上传数据模板.xlsx\" class=\"add__batches pull-left\">下载模板</a>");
-} else if (dataId == "3") {
-    $("#getDownLoadBtn").prepend("<a style=\"margin-right: 20px;\" href=\"../毕业生上传数据模板.xlsx\" class=\"add__batches pull-left\">下载模板</a>");
-} else if (dataId == "4") {
-    $("#getDownLoadBtn").prepend("<a style=\"margin-right: 20px;\" href=\"../教师上传数据模板.xlsx\" class=\"add__batches pull-left\">下载模板</a>");
-} else if (dataId == "5") {
-    $("#getDownLoadBtn").prepend("<a style=\"margin-right: 20px;\" href=\"../用人单位上传数据模板.xlsx\" class=\"add__batches pull-left\">下载模板</a>");
-    columnsForCompany = [{
+// 答者列名
+const columnsForAnswer = [
+    {
         checkbox: true,
         visible: false
     }, {
         field: 'no',
         title: '序号',
         align: 'center',
+formatter: function (value, row, index) {
+                    return index + 1;
+                }
     }, {
-        field: 'answerNum',
-        title: '答题人编号',
+        field: 'answerId',
+        title: 'ID',
         align: 'center',
-        width: '200px'
-    },
-        {
-            field: 'answerName',
-            title: '用人单位',
-            align: 'center'
-        }, {
-            field: 'answerBelong',
-            title: '学校',
-            align: 'center'
-        }, {
-            field: 'answerPhone',
-            title: '手机号码',
-            align: 'center'
-        },
-        {
-            field: 'answerEmail',
-            title: '邮箱',
-            align: 'center'
-        }, {
-            field: 'operation',
-            title: '操作',
-            align: 'center',
-            events: operateEvents,//给按钮注册事件
-            formatter: addFunctionAlty//表格中增加按钮
-        }]
-}
+        // width: '200px'
+    }, {
+        field: 'answerName',
+        title: '姓名',
+        align: 'center'
+    }, {
+        field: 'answerPhone',
+        title: '手机号',
+        align: 'center'
+    }
+/*, {
+        field: 'operation',
+        title: '操作',
+        align: 'center',
+        events: operateEvents,//给按钮注册事件
+        formatter: addFunctionAlty//表格中增加按钮
+    }*/
+];
+
+var usedColumns;
+//$("#getDownLoadBtn").prepend("<a style=\"margin-right: 20px;\" href=\"../在校生上传数据模板.xlsx\" class=\"add__batches pull-left\">下载模板</a>");
+usedColumns = columnsForAnswer;
+
+
+
 
 // 发送方式，短信：0； 邮件：1； 链接：2；
 var sendType = '0';
@@ -117,8 +74,9 @@ var shortUrl = '';
 var previewUrl = '';
 var objLength;
 var objLength1;
+
 //默认顶部导航栏的显示
-if(getCookie("changeTableType") == "shortMessageSend"){   //从已发问卷页面点击进入的问卷发布页面
+if (getCookie("changeTableType") == "shortMessageSend") {   //从已发问卷页面点击进入的问卷发布页面
     deleteCookie("changeTableType");
     document.getElementById('linkSendA').style.backgroundColor = "#fff";
     document.getElementById('linkSendA').removeAttribute("class", "inside-wrapper nav-show nav-items clicked linkCode-icon");
@@ -129,6 +87,7 @@ if(getCookie("changeTableType") == "shortMessageSend"){   //从已发问卷页�
     document.getElementById('shortMessageSendA').setAttribute("class", "inside-wrapper nav-show nav-items clicked sms-icon");
 
     changeTab('shortMessageSend');
+	send('2');
 
     getQuestionInfo();
     if (document.getElementById('msg').value != "") {
@@ -136,7 +95,9 @@ if(getCookie("changeTableType") == "shortMessageSend"){   //从已发问卷页�
         wordStatic(msg);
     }
 
-}else{ //正常进入
+}
+else { //正常进入
+	getGroups();
     document.getElementById('linkSendA').style.backgroundColor = "#1ea0fa";
     document.getElementById('linkSendA').removeAttribute("class", "inside-wrapper nav-show nav-items linkCode-icon");
     document.getElementById('linkSendA').setAttribute("class", "inside-wrapper nav-show nav-items clicked linkCode-icon");
@@ -145,19 +106,79 @@ if(getCookie("changeTableType") == "shortMessageSend"){   //从已发问卷页�
     document.getElementById('shortMessageSendA').removeAttribute("class", "inside-wrapper nav-show nav-items clicked sms-icon");
     document.getElementById('shortMessageSendA').setAttribute("class", "inside-wrapper nav-show nav-items sms-icon");
 }
+//获取下拉列表内容并更新表格
+window.onload=function(){
+		$("#answerGroup").change(function(){
+			var groupname =$("#answerGroup").val(); 
+			getAnswerList();
+				if(groupname != null){
+						var oTable = new TableInit();
+						oTable.Init();
+					}    
+		});
+	}
+	
+function getAnswerList() {
+    $("#userInfoTable").bootstrapTable('refresh');
+}
 
 createDtePicker();
 getQuestionInfo();
-var oTable = new TableInit();
-oTable.Init();
+//查看群组
+function getGroups() {
+    var userName = getCookie("userName");
+    var url = '/answer/queryGroups';
+    var data = userName;
+	commonAjaxPost(true, url, data, getGroupsSuccess);
+}
+
+// 查看群组成功回调
+function getGroupsSuccess(result) {
+    if (result.code == "666") {
+        var data = result.data;
+		console.log(data);
+       $("#panel-23802").empty();
+		var answerGroup = document.getElementById('answerGroup');
+		answerGroup.options.length = 0;
+        if (data.length) {
+            for (var i = 0; i < data.length; i++) {
+				var GroupInfo = data[i];
+				var GroupName = GroupInfo.groupName;
+				var option = new Option(GroupName)
+    			//groups.options[i] = new Option(GroupName,"");	
+				answerGroup.options.add(option);
+            }
+			//groups.size = data.length;
+			//answerGroup.appendChild(groups);
+
+        } else {
+            layer.msg("暂无可选群组", {icon: 0})
+        }
+		var collOpt =new Option('所有人')
+		answerGroup.options.add(collOpt);
+		
+    } else if (result.code == "333") {
+        layer.msg(result.message, {icon: 2});
+        setTimeout(function () {
+            window.location.href = 'answerManage.html';
+        }, 1000)
+    } else {
+        layer.msg(result.message, {icon: 2})
+    }
+
+}
+
+
+
 
 function TableInit() {
-
+	console.log($("#answerGroup").val())
     var oTableInit = new Object();
     //初始化Table
     oTableInit.Init = function () {
         $('#userInfoTable').bootstrapTable({
-            url: '',         //请求后台的URL（*）
+            url: httpRequestUrl + '/answer/queryAnswer',         //请求后台的URL（*）
+			method:'POST',
             striped: true,                      //是否显示行间隔色
             pagination: true,                   //是否显示分页（*）
             sortOrder: "asc",                   //排序方式
@@ -167,7 +188,7 @@ function TableInit() {
             showJumpto: true,
             pageNumber: 1, //初始化加载第一页，默认第一页
             queryParams: queryParams,//请求服务器时所传的参数
-            sidePagination: 'client',
+            sidePagination: 'server',
             pageSize: 10,//单页记录数
             pageList: [10, 20, 30, 40],//分页步进值
             search: false, //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
@@ -176,18 +197,53 @@ function TableInit() {
             showToggle: false,
             minimumCountColumns: 2,             //最少允许的列数
             uniqueId: "no",                     //每一行的唯一标识，一般为主键列
-            columns: columnsForCompany
+            columns: usedColumns,
+  			responseHandler: function (res) {
+                console.log(res.data.list);
+                if (res.code == "666") {
+                    var answerInfo = res.data.list;
+                    var NewData = [];
+                    if (answerInfo.length) {
+                        for (var i = 0; i < answerInfo.length; i++) {
+                            var dataNewObj = {
+                                'answerId': '',
+                                "answerName": '',
+                                'answerPhone': ''
+                            };
+                            dataNewObj.answerId = answerInfo[i].id;
+                            dataNewObj.answerName = answerInfo[i].answerName;
+                            dataNewObj.answerPhone = answerInfo[i].phoneNumber;
+/*                            dataNewObj.status =dataNewObj.status = getStatus(
+                                userInfo[i].questionStop, userInfo[i].startTime,
+                                userInfo[i].endTime, userInfo[i].releaseTime
+                            );*/
+                            NewData.push(dataNewObj);
+                        }
+                        //console.log(NewData)
+                    }
+                    var data = {
+                        total: res.data.total,
+                        rows: NewData
+                    };
+
+                    return data;
+                }
+
+            }
         });
     };
 
     // 得到查询的参数
     function queryParams(params) {
-        var userName = $("#keyWord").val();
+		var groupname =$("#answerGroup").val();
+		var username =getCookie('userName');
+		console.log(groupname)
         // //console.log(userName);
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             pageNum: params.pageNumber,
             pageSize: params.pageSize,
-            username: userName
+			groupName:groupname,
+			username : username
         };
         return JSON.stringify(temp);
     }
@@ -201,6 +257,8 @@ function addFunctionAlty(value, row, index) {
         '<button id="Tbtn_delete" style=" background-color: #f9f9f9;color: #f00;">删除</button>'
     ].join('');
 }
+
+
 
 //顶部导航栏切换
 function changeTab(id) {
@@ -255,21 +313,27 @@ function send(value) {
 
         document.getElementById('myLittleTip').style.display = 'none';
         document.getElementById('ctl02_ContentPlaceHolder1_btnSend').style.display = '';
-    } else if (value == 1) {
+    }
+    else if (value == 1) { // 邮件发送
         sendType = '1';
         //短信内容隐藏
-        document.getElementById('sendKind').style.display = 'none'
-        document.getElementById('sendContent').style.display = 'none'
-        document.getElementById('sendTimeChoose').style.display = 'none'
-        //    邮箱方式显示
+        // document.getElementById('sendKind').style.display = 'none'
+        // document.getElementById('sendContent').style.display = 'none'
+        // document.getElementById('sendTimeChoose').style.display = 'none'
+        // 邮箱方式显示
         document.getElementById('sendMailContent').style.display = 'block'
-        //    链接方式隐藏
-        document.getElementById('sendUrlContent').style.display = 'none'
-        //    发送按钮
+        // 链接方式隐藏
+        // document.getElementById('sendUrlContent').style.display = 'none'
+
+        // qq、微信方式隐藏
+        document.getElementById('tencentContent').style.display = 'none'
+
+        // 发送按钮
         document.getElementById('sendButton').style.display = 'block'
         document.getElementById('myLittleTip').style.display = 'none';
         document.getElementById('ctl02_ContentPlaceHolder1_btnSend').style.display = '';
-    } else {
+    }
+    else if(value == 2) {
         sendType = '2';
         //短信内容隐藏
         document.getElementById('sendKind').style.display = 'none'
@@ -287,6 +351,31 @@ function send(value) {
         document.getElementById('ctl02_ContentPlaceHolder1_btnSend').style.display = 'none';
 
     }
+    else if (value == 3) { //
+
+        sendType = '3';
+
+        getQrcode();
+
+        // 邮箱方式隐藏
+        document.getElementById('sendMailContent').style.display = 'none'
+
+        // qq、微信方式开启
+        document.getElementById('tencentContent').style.display = 'block'
+
+    }
+    else if (value == 4) {
+
+        sendType = '4';
+
+        getQrcode();
+
+        // 邮箱方式隐藏
+        document.getElementById('sendMailContent').style.display = 'none'
+
+        // qq、微信方式开启
+        document.getElementById('tencentContent').style.display = 'block'
+    }
 }
 
 //判断选择的是定时发送还是立刻发送  1:定时发送
@@ -303,8 +392,33 @@ function test(value) {
     }
 }
 
+function test1(value) {
+    if (value == 1) {
+        shortMessageGetTime = '1';
+        document.getElementById('sendSecond').style.display = 'block'
+       
+        // //console.log(sendTime)
+    } else {
+        shortMessageGetTime = '0';
+        document.getElementById('sendSecond').style.display = 'none'
+    }
+}
+
+function test2(value) {
+    if (value == 1) {
+        shortMessageGetTime = '1';
+        document.getElementById('sendTimes').style.display = 'block'
+        
+        // //console.log(sendTime)
+    } else {
+        shortMessageGetTime = '0';
+        document.getElementById('sendTimes').style.display = 'none'
+    }
+}
+
 //上传文件
 function addFile() {
+    // debugger
     document.getElementById("image").click();
 }
 
@@ -313,7 +427,7 @@ function getQuestionInfo() {
     var da = {
         'id': questionId
     };
-    var url = '/queryQuestContextEnd';
+   var url = '/queryQuestContextEnd';
     jQuery.ajax({
         url: httpRequestUrl + url,
         type: "POST",
@@ -338,9 +452,24 @@ function getQuestionInfo() {
     });
 }
 
+
+function mapper (person) {
+    var ret = {
+        'answerId': '',
+        'answerName': '',
+        'answerPhone': ''
+    };
+
+    if(person.hasOwnProperty("标识")) ret.answerId = person.标识;
+    if(person.hasOwnProperty("姓名")) ret.answerName = person.姓名;
+    if(person.hasOwnProperty("手机号")) ret.answerPhone = person.手机号;
+
+    return ret;
+}
+
 //读取上传的excel表格中的内容
 $('#image').change(function (e) {
-    debugger;
+    // debugger;
     var files = e.target.files;
     var fileReader = new FileReader();
     fileReader.onload = function (ev) {
@@ -364,15 +493,18 @@ $('#image').change(function (e) {
                 break; // 如果只取第一张表，就取消注释这行
             }
         }
+        // console.log(persons);
         if (persons.length != 0) {
-            if (!persons[0].no || !persons[0].answerNum || !persons[0].answerName || !persons[0].answerBelong || !persons[0].answerPhone || !persons[0].answerEmail) {
-                layer.msg('数据模板不正确');
-
-                return
-            }
-            _$("#userInfoTable").bootstrapTable('removeAll');
+             if (!persons[0].no || !persons[0].answerId || !persons[0].answerName ||  !persons[0].answerPhone ) {
+                 layer.msg('数据模板不正确');
+            
+                 return
+             }
             //传入参数
             for (var i = 0; i < persons.length; i++) {
+/*                persons[i] = mapper(persons[i]);
+				console.log(persons[i])
+                persons[i].no = i + 1;*/
                 _$("#userInfoTable").bootstrapTable('insertRow', {index: i, row: persons[i]});
                 if (i == persons.length - 1) {
                     if (files) {
@@ -460,7 +592,9 @@ function layOutSend() {
                 }
             });
         }
-    } else if (sendType == '1') {   //邮箱发送方式
+    }
+    else if (sendType == '1') {
+        //邮箱发送方式
         //邮件标题
         var emailTitle = document.getElementById("ctl02_ContentPlaceHolder1_txtEmailTitle").value;
         //邮件发送富文本内容
@@ -527,6 +661,7 @@ function layOutSend() {
             });
         }
     }
+
 }
 
 //保存问卷信息
@@ -535,7 +670,8 @@ function layOutHold(falg) {
     var data;
 
     //发送问卷答题结束语
-    var endContent = document.getElementById("tipT").value;
+
+    /*var endContent = document.getElementById("tipT").value;*/
 
     //短信
     if (sendType == "0") {
@@ -543,7 +679,7 @@ function layOutHold(falg) {
         var sendContent = document.getElementById("msg").value;
 
         data = {
-            "questionId": questionId,           //问卷id
+            "id": questionId,           //问卷id
             "dataId": dataId,                    //问卷类型
             "releaseTime": "",            //发送时间
             "sendType": sendType,                //发送类别，0短信，1邮件
@@ -560,7 +696,7 @@ function layOutHold(falg) {
         emailContent = emailContent.value;
         //发送问卷答题结束语
         data = {
-            "questionId": questionId,           //问卷id
+            "id": questionId,           //问卷id
             "dataId": dataId,                    //问卷类型
             "releaseTime": "",            //发送时间
             "sendType": sendType,                //发送类别，0短信，1邮件
@@ -571,12 +707,27 @@ function layOutHold(falg) {
         };
 
     } else if (sendType == "2") {
+			var sendTime = '';
+			 if (shortMessageGetTime == '0') {
+           		 sendTime = "";
+        	} else if (shortMessageGetTime == '1') {
+          		  //定时发送短信的时间
+           		 sendTime = document.getElementById("scheduledEndTime").value;
+          		  sendTime = dateChange(sendTime);
+       		 }
+		var groupname= $("#answerGroup").val();
+		var  sendsecond = document.getElementById("scheduledSecond").value;
+		var  sendtimes = document.getElementById("scheduledTimes").value;
+		console.log("11111"+sendsecond);
+		console.log("22222"+sendtimes);
         data = {
-            "questionId": questionId,           //问卷id
-            "releaseTime": "",            //发送时间
+            "id": questionId,           //问卷id
+            "releaseTime":sendTime,          //发送时间
             "sendType": sendType,                //发送类别，0短信，1邮件
-            "questionEndContent": endContent,        //答卷结束语
-            "sendInfo": null                     //人员信息
+            "sendInfo": null ,    
+			"groupname":groupname,
+			"second":parseInt(sendsecond),
+			"times":parseInt(sendtimes)
         };
 
     }
@@ -590,7 +741,11 @@ function layOutHold(falg) {
         success: function (result) {
             if (result.code == "666") {
                 if (falg == "true") {
-                    layer.msg("保存成功！")
+                    layer.msg("发送成功！")
+				setTimeout(function () {
+           			window.location.href = "questionnaireManage.html";
+       			 }, 1000);
+					
                 }
 
             } else if (result.code == "333") {
@@ -603,40 +758,23 @@ function layOutHold(falg) {
             }
         }
     })
-
+   
 }
 
 //生成二维码
 function getQrcode() {
     _$("#ctl02_ContentPlaceHolder1_imgQrcode").empty();
-    var url = '/getShortUrlForLink';
-    var da = {
-        'id': questionId,
-        'link': "222"
-    };
-    // //console.log(da);
-    _$.ajax({
-        url: httpRequestUrl + url,
-        type: "POST",
-        data: JSON.stringify(da),
-        dataType: "json",
-        contentType: "application/json",
-        success: function (res) {
-            // //console.log(res);
-            var resData = JSON.parse(res.data);
-            shortUrl = resData.tinyurl;
-            document.getElementById('ctl02_ContentPlaceHolder1_txtLink').value = shortUrl;
-            // $('#code').qrcode(); //任意字符串
-            _$("#ctl02_ContentPlaceHolder1_imgQrcode").qrcode({
-                width: 100, //宽度
-                height: 100, //高度
-                text: shortUrl    //任意内容
-            })
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            // alert(jqXHR);
-        },
+
+    var url = "http://192.168.43.254:8085/pages/previewQuestionnaire.html?id=" + questionId;
+
+    document.getElementById('ctl02_ContentPlaceHolder1_txtLink').value = url;
+
+    _$("#ctl02_ContentPlaceHolder1_imgQrcode").qrcode({
+        width: 100, //宽度
+        height: 100, //高度
+        text: url    //任意内容
     });
+
 }
 
 function gotoPreview() {
@@ -681,7 +819,9 @@ function designQuestionnaire() {
     if (ifDesignQuestionnaire == "false") {
         layer.msg("问卷处于运行状态或问卷已发布，不可设计问卷", {icon: 2})
     } else {
-        _$.cookie("QuestionId", questionId);
+        _$.cookie("questionId", questionId);
+/*		setCookie("questionId",questionId);*/
+		console.log(questionId);
         window.open('designQuestionnaire.html')
     }
 }
@@ -725,4 +865,3 @@ function copyUrl2() {
     document.execCommand("Copy"); // 执行浏览器复制命令
     layer.msg("已复制好，可贴粘。", {icon: 1, time: 1000});
 }
-
