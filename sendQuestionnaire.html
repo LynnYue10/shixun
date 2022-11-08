@@ -16,6 +16,27 @@
     <link rel="stylesheet" type="text/css" href="../css/selectpick.css"/>
     <link rel="stylesheet" href="../css/send.css">
     <script type="text/javascript" src="../plugins/kindeditor/kindeditor.js?v=197"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+    <link rel="stylesheet" href="../plugins/daterangepicker/daterangepicker.css">
+
+    <link rel="stylesheet" href="../plugins/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../plugins/bootstrap-select/bootstrap-select.min.css">
+    <link rel="stylesheet" href="../css/default.css">
+    <link rel="stylesheet" href="../plugins/bootstrap-table/css/bootstrap-table.css">
+
+    <link rel="stylesheet" href="../css/wjxmaster.css">
+    <link rel="stylesheet" href="../css/myquestionnaires.css">
+
+    <script src="../plugins/jQuery/jquery-1.12.4.min.js"></script>
+    <script src="../plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../plugins/bootstrap-table/js/bootstrap-table.js"></script>
+    <script src="../plugins/bootstrap-table/js/bootstrap-table-zh-CN.js"></script>
+    <script src="../plugins/layer/layer.js"></script>
+    <script src="../plugins/cookie/jquery.cookie.js"></script>
+    <script src="../common/common.js"></script>
+    <script src="answerQuestionJs/answerManage.js"></script>
     <style>
         /*.selSendTypeBox {*/
         /*position: absolute;*/
@@ -68,7 +89,7 @@
                 <em class="icon return-icon"></em>
                 <div class="tips">
                     <div class="caret-top"></div>
-                    返回我的项目
+                    返回我的问卷
                 </div>
             </a>
             <a class="nav-items" href="javascript:void(0)" onclick="designQuestionnaire()">
@@ -121,10 +142,10 @@
                         <span>问卷发布</span>
                     </a>
 
-                    <a id="" href="alreadySendQuestInfo.html" style="background-color:#fff" class="inside-wrapper nav-show nav-items linkCode-icon">
+<!--                     <a id="" href="alreadySendQuestInfo.html" style="background-color:#fff" class="inside-wrapper nav-show nav-items linkCode-icon">
                         <label class=" icon linkCode-icon"></label><br>
                         <span>已发问卷</span>
-                    </a>
+                    </a> -->
                 </div>
             </div>
         </div>
@@ -184,62 +205,84 @@
                                                            class="add__batches pull-left">批量添加答题人信息</a>
                                                         <input type="file" id="image" name="image"
                                                                style="display:none;"/>
+                                                         <script>
+                                                        
+                                                        $('#image').change(function (e) {
+                                                            // debugger;
+                                                            var files = e.target.files;
+                                                            var fileReader = new FileReader();
+                                                            fileReader.onload = function (ev) {
+                                                                try {
+                                                                    var data = ev.target.result,
+                                                                        workbook = XLSX.read(data, {
+                                                                            type: 'binary'
+                                                                        })// 以二进制流方式读取得到整份excel表格对象
+                                                                    persons = []; // 存储获取到的数据
+                                                                } catch (e) {
+                                                                    layer.msg('文件类型不正确');
+                                                                    return;
+                                                                }
+                                                                // 表格的表格范围，可用于判断表头是否数量是否正确
+                                                                var fromTo = '';
+                                                                // 遍历每张表读取
+                                                                for (var sheet in workbook.Sheets) {
+                                                                    if (workbook.Sheets.hasOwnProperty(sheet)) {
+                                                                        fromTo = workbook.Sheets[sheet]['!ref'];
+                                                                        persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
+                                                                        break; // 如果只取第一张表，就取消注释这行
+                                                                    }
+                                                                }
+                                                                // console.log(persons);
+                                                                if (persons.length != 0) {
+                                                                     if (!persons[0].no || !persons[0].answerId || !persons[0].answerName ||  !persons[0].answerPhone ) {
+                                                                         layer.msg('数据模板不正确');
+                                                                    
+                                                                         return
+                                                                     }
+                                                                    _$("#userInfoTable").bootstrapTable('removeAll');
+                                                                    //传入参数
+                                                                    for (var i = 0; i < persons.length; i++) {
+                                                                    	console.log(persons[i])
+                                                                       /*  persons[i] = mapper(persons[i]);
+                                                                        console.log( persons[i]);
+                                                                        persons[i].no = i + 1; */
+                                                                        $("#userInfoTable").bootstrapTable('insertRow', {index: i, row: persons[i]});
+                                                                        if (i == persons.length - 1) {
+                                                                            if (files) {
+                                                                                document.getElementById('image').value = '';
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            };
+                                                            // 以二进制方式打开文件
+                                                            fileReader.readAsBinaryString(files[0]);
+                                                        });
+                                                        
+                                                        
+                                                        
+                                                        
+                                                        </script> 
                                                         <!--<a onclick="return window.confirm(&quot;您确定清空收件人列表吗？&quot;);"-->
                                                            <!--id="ctl02_ContentPlaceHolder1_btnDelete2" title="清空手机号码列表"-->
                                                            <!--class="defaultColor underline pull-right"-->
                                                            <!--href="javascript:__doPostBack('ctl02$ContentPlaceHolder1$btnDelete2','')">清空手机号码列表</a>-->
                                                     </div>
+                                                    <div class="fill__name-box clearfix">
+                										<label class="pull-left" id="spanAnswerGroup">答者群组：</label>
+                    									<select class=" form-control selectpicker pull-left my-select" id="answerGroup" title="答者群组" data-first-option="false"
+                           									 data-live-search="true" style="line-height:50px; margin-bottom: 14px;">          
+                   										 </select>
+                
+            										</div>
                                                     <div class="fillet-box overall__table ui-dialog__resetMargin">
                                                         <div>
                                                             <table id="userInfoTable"></table>
                                                         </div>
                                                         <ul id="ctl02_ContentPlaceHolder1_divAdd" class="IM-address">
                                                         </ul>
-                                                        <!--<div id="ctl02_ContentPlaceHolder1_lmlpage" class="text-center">-->
-                                                            <!--<div class="page-box page-box-myquestion"-->
-                                                                 <!--style="color: #808080; font-size: 14px; height: 30px;">-->
-                                                                <!--<div id="ctl02_ContentPlaceHolder1_pagehttml"-->
-                                                                     <!--class="page-list pager-linkpage">-->
-                                                                    <!--<a id="ctl02_ContentPlaceHolder1_btnFirst"-->
-                                                                       <!--disabled="disabled" class="page-first disabled"-->
-                                                                       <!--alt="第一页"></a>-->
-                                                                    <!--<a id="ctl02_ContentPlaceHolder1_btnPre"-->
-                                                                       <!--disabled="disabled" class="page-up disabled"-->
-                                                                       <!--alt="上一页"></a>-->
-
-                                                                    <!--第1/1页-->
-
-                                                                    <!--<a id="ctl02_ContentPlaceHolder1_btnNext"-->
-                                                                       <!--disabled="disabled" class="page-down disabled"-->
-                                                                       <!--alt="下一页"></a>-->
-
-                                                                    <!--<a id="ctl02_ContentPlaceHolder1_btnLast"-->
-                                                                       <!--disabled="disabled" class="page-last disabled"-->
-                                                                       <!--alt="最后一页"></a>-->
-
-                                                                <!--</div>-->
-                                                            <!--</div>-->
-                                                        <!--</div>-->
                                                     </div>
                                                 </div>
-                                                <!--<script>-->
-                                                    <!--var openShareWxProgram = document.getElementById("ctl02_ContentPlaceHolder1_openShareWxProgram");-->
-                                                    <!--if (openShareWxProgram) {-->
-                                                        <!--openShareWxProgram.addEventListener("click", function () {-->
-                                                            <!--layer.open({-->
-                                                                <!--type: 2,-->
-                                                                <!--isOutAnim: false,-->
-                                                                <!--title: false,-->
-                                                                <!--maxmin: false,-->
-                                                                <!--shadeClose: true, //点击遮罩关闭层-->
-                                                                <!--area: ['360px', '528px'],-->
-                                                                <!--content: ['/wjx/design/ActivityWxAppQrCode.aspx?activity=' + 26556304, 'no']-->
-                                                            <!--});-->
-                                                        <!--})-->
-                                                    <!--}-->
-
-
-                                                <!--</script>-->
                                                 <style>
                                                     .beautify-wrap {
                                                         clear: both;
@@ -288,9 +331,9 @@
                                             <div class="form-group">
                                                 <label class="control-label fontWeight">发送方式</label>
                                                 <span style="padding-left: 23px;">
-                                                  <input type="radio" name="sendtype" value="0" onclick="send('0')"
+                                                  <!-- <input type="radio" name="sendtype" value="0" onclick="send('0')"
                                                          checked>&nbsp;短信&nbsp;&nbsp;&nbsp;&nbsp;
-                                                    <input type="radio" name="sendtype" value="1" onclick="send('1')">&nbsp;邮件&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <input type="radio" name="sendtype" value="1" onclick="send('1')">&nbsp;邮件&nbsp;&nbsp;&nbsp;&nbsp; -->
                                                     <input type="radio" name="sendtype" value="2" onclick="send('2')">&nbsp;链接
                                                 </span>
 
@@ -305,16 +348,51 @@
                                                 </span>
 
                                             </div>
-                                            <!--短信发送-->
-                                            <div class="form-group" id="sendTimeChoose" style="display: none">
-                                                <label class="control-label fontWeight">发布时间</label>
+                                            
+                                            <div class="form-group" id="sendKind">
+                                                <label class="control-label fontWeight">限时问卷</label>
+                                                <span style="padding-left: 23px;">
+                                                  <input type="radio" name="sendSecond" value="0" onclick="test1('0')"
+                                                         checked>不限时&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <input type="radio" name="sendSecond" value="1" onclick="test1('1')">限时
+                                                </span>
+
+                                            </div>
+                                             <div class="form-group" id="sendSecond" style="display: none">
+                                                <label class="control-label fontWeight">答卷时长（秒）</label>
                                                 <span style="padding-left: 23px;">
                                                     <!--<label class="control-label time-g">开始时间：</label>-->
-                                                    <input id="scheduledEndTime" class="time-g"
+                                                    <input id="scheduledSecond" class="time-g"
                                                            style="height:32px;padding-left: 20px;border-radius: 4px;border: 1px solid #abafb2">
                                                 </span>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group" id="sendKind">
+                                                <label class="control-label fontWeight">答卷次数</label>
+                                                <span style="padding-left: 23px;">
+                                                  <input type="radio" name="sendTimes" value="0" onclick="test2('0')"
+                                                         checked>无上限&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <input type="radio" name="sendTimes" value="1" onclick="test2('1')">设置次数
+                                                </span>
+
+                                            </div>
+                                           <div class="form-group" id="sendTimes" style="display: none">
+                                                <label class="control-label fontWeight">答卷次数（次）</label>
+                                                <span style="padding-left: 23px;">
+                                                    <!--<label class="control-label time-g">开始时间：</label>-->
+                                                    <input id="scheduledTimes" class="time-g"
+                                                           style="height:32px;padding-left: 20px;border-radius: 4px;border: 1px solid #abafb2">
+                                                </span>
+                                            </div>
+                                            <!--短信发送-->
+<!--                                             <div class="form-group" id="sendTimeChoose" style="display: none">
+                                                <label class="control-label fontWeight">发布时间</label>
+                                                <span style="padding-left: 23px;">
+                                                    <label class="control-label time-g">开始时间：</label>
+                                                    <input id="scheduledEndTime" class="time-g"
+                                                           style="height:32px;padding-left: 20px;border-radius: 4px;border: 1px solid #abafb2">
+                                                </span>
+                                            </div> -->
+<!--                                             <div class="form-group">
                                                 <span style="color:red">*</span><label for="tipT"
                                                                                        class="control-label fontWeight">答卷结束提示</label>
                                                 <span id="myLittleTip" style="display: none" class="must">注意：请在分享链接前点击保存内容按钮，否则答卷结束可能没有答卷结束提示语</span>
@@ -323,29 +401,24 @@
                                                           style="height:50px;width: 750px;border-radius: 4px;border: 1px solid #abafb2;resize:none;padding:6px 12px;margin-top: 15px">
                                                 </textarea>
                                                 </div>
-                                            </div>
+                                            </div> -->
+                                            
                                             <!--短信发送-->
                                             <div class="form-group" id="sendContent">
-                                                <span style="color:red">*</span><label for="msg" class="control-label fontWeight">发布消息内容</label>
-                                                <!--<label class="clearfix">-->
+                                                <!-- <span style="color:red">*</span><label for="msg" class="control-label fontWeight">发布消息内容</label>
+                                                <label class="clearfix"> -->
 
-                                                <span class="must" style="margin-left: 10px;font-size: 12px;">注意：请在需要加入姓名、学校名称的位置添加"<em class="blue">【姓名】、【学校名】</em>"，系统将会根据问卷自动进行替换！</span>
+                                                <!-- <span class="must" style="margin-left: 10px;font-size: 12px;">注意：请在需要加入姓名、学校名称的位置添加"<em class="blue">【姓名】、【学校名】</em>"，系统将会根据问卷自动进行替换！</span> -->
                                                 <!--</label>-->
                                                 <div>
-                                                 <textarea class="form-control-t" id="msg" onkeyup="wordStatic(this);"
+                                                <!--  <textarea class="form-control-t" id="msg" onkeyup="wordStatic(this);"
                                                           maxlength="38" placeholder="不能超过44字"
-                                                          style="width: 750px;height:100px;border-radius: 4px;border: 1px solid #abafb2;resize:none;padding:6px 12px;margin-top: 15px"></textarea>
-                                               <!--  <textarea class="form-control-t" id="msg" onkeyup="wordStatic(this);"
-                                                          maxlength="38" placeholder="不能超过44字"
-                                                          onchange="this.value=this.value.substring(0, 38)"  
-                                                          onkeydown="this.value=this.value.substring(0, 38)"
-                                                           onkeyup="this.value=this.value.substring(0, 38)"
                                                           style="width: 750px;height:100px;border-radius: 4px;border: 1px solid #abafb2;resize:none;padding:6px 12px;margin-top: 15px"></textarea> -->
-                                                    <p class="text-count" style="font-size:12px;">
-                                                        <!--输入<span id="txt">0</span>字&nbsp;-->
+                                                <!--  <p class="text-count" style="font-size:12px;">
+                                                        输入<span id="txt">0</span>字&nbsp;
                                                         还能输入<span id="Lnum" style="color:red;font-size:12px;"></span>个字,
                                                         此短信内容将按<span id="num" style="color:red;font-size:12px;">0</span>条短信计费
-                                                    </p>
+                                                    </p> -->
 
                                                 </div>
                                             </div>
@@ -361,10 +434,10 @@
                                                                 <!--<label for="">-->
                                                                 <!--<strong>标题：</strong>-->
                                                                 <!--</label>-->
-                                                                <input name="ctl02$ContentPlaceHolder1$txtEmailTitle"
+<!--                                                                 <input name="ctl02$ContentPlaceHolder1$txtEmailTitle"
                                                                        type="text" placeholder="请填写邮箱发送的标题，谢谢！"
                                                                        id="ctl02_ContentPlaceHolder1_txtEmailTitle"
-                                                                       class="ui-dialog__input--718">
+                                                                       class="ui-dialog__input--718"> -->
                                                             </div>
                                                             <div class="ui-dialog__items ui-dialog__marginB-10">
                                                                 <label for="" class="clearfix">
@@ -386,7 +459,27 @@
                                             <div class="form-group" id="sendUrlContent" style="display: none">
                                                 <!--<span style="color:red">*</span><label for="msg"-->
                                                 <div class="box">
+                                                                                            <!--短信发送-->
+                                            <div class="form-group" id="selectsendKind">
+                                                <label class="control-label fontWeight">发布模式</label>
+                                                <span style="padding-left: 23px;">
+                                                  <input type="radio" name="sendTime" value="0" onclick="test('0')"
+                                                         checked>立即发布&nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <input type="radio" name="sendTime" value="1" onclick="test('1')">定时发布
+                                                </span>
+
+                                            </div>
+                                            <!--短信发送-->
+                                            <div class="form-group" id="sendTimeChoose" style="display: none">
+                                                <label class="control-label fontWeight">发布时间</label>
+                                                <span style="padding-left: 23px;">
+                                                    <!--<label class="control-label time-g">开始时间：</label>-->
+                                                    <input id="scheduledEndTime" class="time-g"
+                                                           style="height:32px;padding-left: 20px;border-radius: 4px;border: 1px solid #abafb2">
+                                                </span>
+                                            </div>
                                                     <div class="link-box clearfix" style="margin-top:0px;">
+                                                    
                                                         <div class="scan-code pull-left">
                                                             <div class="pull-left qrcode-g"
                                                                  id="ctl02_ContentPlaceHolder1_imgQrcode">
@@ -420,22 +513,6 @@
 
                                                             </div>
                                                         </div>
-                                                        <!--<script>-->
-                                                            <!--var openShareWxProgram = document.getElementById("ctl02_ContentPlaceHolder1_openShareWxProgram");-->
-                                                            <!--if (openShareWxProgram) {-->
-                                                                <!--openShareWxProgram.addEventListener("click", function () {-->
-                                                                    <!--layer.open({-->
-                                                                        <!--type: 2,-->
-                                                                        <!--isOutAnim: false,-->
-                                                                        <!--title: false,-->
-                                                                        <!--maxmin: false,-->
-                                                                        <!--shadeClose: true, //点击遮罩关闭层-->
-                                                                        <!--area: ['360px', '528px'],-->
-                                                                        <!--content: ['/wjx/design/ActivityWxAppQrCode.aspx?activity=' + 26556304, 'no']-->
-                                                                    <!--});-->
-                                                                <!--})-->
-                                                            <!--}-->
-
 
                                                         <!--</script>-->
                                                         <style>
@@ -478,35 +555,12 @@
                                             <div class="text-center finish__wrap ui-dialog__marginT-12"
                                                  style="margin-top:20px;" id="sendButton">
                                                 <a class="btn btn-blue-frame" href="javascript:void(0)"
-                                                   style="color:#1ea0fa" onclick="layOutHold('true')">保存内容</a>
-                                                <a onclick="layOutSend();" id="ctl02_ContentPlaceHolder1_btnSend"
-                                                    class="btn  btn-blue-solid">立即发送</a>
+                                                   style="color:#1ea0fa" onclick="layOutHold('true')">发送</a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div id="ctl02_ContentPlaceHolder1_divBdShare">
-                                    <!--<script>-->
-                                        <!--//                                                                           window._bd_share_config = {-->
-                                        <!--//                                    "common": {-->
-                                        <!--//                                    "bdSnsKey": {-->
-                                        <!--//                                    "tsina": "585909223",-->
-                                        <!--//                                    'tqq': '8395078dc6184d8394090c62482dc2db'-->
-                                        <!--//                                    },-->
-                                        <!--//                                    "bdUrl": "https://www.wjx.cn/jq/26556304.aspx",-->
-                                        <!--//                                    "bdText": "VGB",-->
-                                        <!--//                                    'bdDesc': 'Hi，你好，这是我在问卷星上创建的问卷，烦请填写！ ',-->
-                                        <!--//                                    'bdComment': '',-->
-                                        <!--//                                    "bdMini": "2",-->
-                                        <!--//                                    "bdMiniList": false,-->
-                                        <!--//                                    "bdPic": "https://image.wjx.cn/images/wlogo.png",-->
-                                        <!--//                                    "bdStyle": "0",-->
-                                        <!--//                                    "bdSize": "24",-->
-                                        <!--//                                    'bdSign': 'off'-->
-                                        <!--//                                    }, "share": {}-->
-                                        <!--//                                    };-->
-                                        <!--//                                    with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = '/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];-->
-                                    <!--</script>-->
 
                                 </div>
                             </div>
