@@ -22,6 +22,8 @@ public interface QuestionnaireMapper {
      
      List<Map<String, Object>> selectAllQuestionnaire();
      
+     List<Map<String, Object>> queryQuestionnaireInfo(Questionnaire questionnaire);
+     
      List<Map<String,Object>> queryQuestionnaireList(Map<String, Object> map);
      
      List<Map<String,Object>> queryDeletedQuestionnaireList(Map<String, Object> map);
