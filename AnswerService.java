@@ -58,15 +58,24 @@ public class AnswerService {
     }
     
     public  PageInfo  queryQuestionnaireByProjectId(Map<String, Object> map) {
-    	System.out.println("2");
     	int pagenum = (int)map.get("pageNum");
     	int pageSize = (int) map.get("pageSize");
     	PageHelper.startPage(pagenum, pageSize);
     	List<Map<String,Object>>  resultList = answerEntityMapper.queryQuestionnaireByProjectId(map);
-    	System.out.println("！！"+resultList);
         PageInfo<Map<String, Object>> page = new PageInfo<>(resultList);
         return page;
     }
+    
+    public  PageInfo  queryAnswerByGroupname(Map<String, Object> map) {
+    	int pagenum = (int)map.get("pageNum");
+    	int pageSize = (int) map.get("pageSize");
+    	PageHelper.startPage(pagenum, pageSize);
+    	List<Map<String,Object>>  resultList = answerEntityMapper.queryAnswerByGroupname(map);
+        PageInfo<Map<String, Object>> page = new PageInfo<>(resultList);
+        return page;
+    }
+    
+    
     
     /**
      * 查询群组 
@@ -91,6 +100,21 @@ public class AnswerService {
     	PageHelper.startPage(pagenum,pageSize); 
     	String username = "admin";
 		List<Map<String,Object>> resultList = answerEntityMapper.queryAnswerList(username,answername);
+		PageInfo<Map<String,Object>> page = new PageInfo<>(resultList);
+        return page;   
+	}
+    
+    /**
+     * 查询所有答者列表（发送时） 
+     * @param map
+     * @return
+     */
+    public PageInfo queryAllAnswerList(Map<String,Object> map) {
+    	int pagenum = (int)map.get("pageNum");
+    	int pageSize = (int)map.get("pageSize");
+    	String answername = (String) map.get("answerName");
+    	PageHelper.startPage(pagenum,pageSize); 
+		List<Map<String,Object>> resultList = answerEntityMapper.queryAllAnswerList(map);
 		PageInfo<Map<String,Object>> page = new PageInfo<>(resultList);
         return page;   
 	}
@@ -159,7 +183,6 @@ public class AnswerService {
 		AnswerEntity answerEntity = new AnswerEntity();
 		answerEntity.setId((String) map.get("id"));
 		answerEntity.setAnswername((String) map.get("answername"));
-		System.out.println("6892658486"+map.get("groupname"));
 		answerEntity.setGroupname((String)map.get("groupname"));
 		answerEntityMapper.modifyAnswer(answerEntity);		
 	}
