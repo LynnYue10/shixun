@@ -27,6 +27,11 @@ public interface AnswerEntityMapper {
      */
     List<Map<String,Object>> queryQuestionnaireByProjectId( Map<String, Object> map);
 	
+    List<Map<String,Object>> queryAnswerByGroupname( Map<String, Object> map);
+    
+    List<Map<String,Object>> queryAllAnswerList( Map<String, Object> map);
+    
+    
 	/**
      * 查询答者列表
      * @param String
