@@ -22,8 +22,6 @@ public interface QuestionnaireMapper {
      
      List<Map<String, Object>> selectAllQuestionnaire();
      
-     List<Map<String, Object>> queryQuestionnaireInfo(Questionnaire questionnaire);
-     
      List<Map<String,Object>> queryQuestionnaireList(Map<String, Object> map);
      
      List<Map<String,Object>> queryDeletedQuestionnaireList(Map<String, Object> map);
@@ -51,9 +49,15 @@ public interface QuestionnaireMapper {
       */
      void deleteQuestionnaireById(String id);
      
-     List<Map<String, Object>> queryUserList(String groupName);
+     List<Map<String, Object>> queryUserList(String groupName,String questionName);
+     
+     List<Map<String, Object>> queryUserList1(String groupName,String questionName);
      
      int updateByPrimaryKeySelective(Questionnaire questionnaire);
      
      int deleteModel(Questionnaire questionnaire);
+
+	String getQuesIdByName(String questionName);
+
+	Questionnaire getQuesById(String questionnaireId);
 }
