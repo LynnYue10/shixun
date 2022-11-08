@@ -63,16 +63,37 @@ public class AnswerController {
      */
     @RequestMapping(value = "/queryAnswerByGroupname",method = RequestMethod.POST, headers = "Accept=application/json")
     public HttpResponseEntity queryQuestionnaireByProjectId(@RequestBody Map<String, Object> map) {
-    	System.out.println(map);
-    	System.out.println("1");
+
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
         PageInfo list = answerService.queryQuestionnaireByProjectId(map);
-        System.out.println(list);
+      
         httpResponseEntity.setData(list);
         httpResponseEntity.setCode(Constans.SUCCESS_CODE);
         return httpResponseEntity;
     }
     
+    
+    /**
+     * 查看某一群组的用户（发送时） 
+     * @param GroupEntity
+     * @return
+     */
+    @RequestMapping(value = "/queryAnswer",method = RequestMethod.POST, headers = "Accept=application/json")
+    public HttpResponseEntity queryAnswerByGroupname(@RequestBody Map<String, Object> map) {
+        HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
+        if(!map.get("groupName").equals("所有人")) {
+        	PageInfo list = answerService.queryAnswerByGroupname(map);
+        	httpResponseEntity.setData(list);
+        	httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+        }else {
+        	PageInfo list = answerService.queryAllAnswerList(map);
+        	httpResponseEntity.setData(list);
+        	httpResponseEntity.setCode(Constans.SUCCESS_CODE);
+        	
+        }
+        
+        return httpResponseEntity;
+    }
     
     /**
      * 查询全部群组名称
@@ -83,7 +104,7 @@ public class AnswerController {
     public HttpResponseEntity queryGroups() {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
         List<Map<String, Object>> maps = answerService.queryGroups();
-        System.out.println("4132413"+maps);
+        
         httpResponseEntity.setData(maps);
         httpResponseEntity.setCode("666");
         return httpResponseEntity;
@@ -139,11 +160,9 @@ public class AnswerController {
     public HttpResponseEntity addAnswer(@RequestBody AnswerEntity answerEntity) {
         HttpResponseEntity httpResponseEntity = new HttpResponseEntity();
         String answername = answerEntity.getAnswername();
-        System.out.println("###");
-        System.out.println(answername);
         List<Map<String, Object>> maps = answerService.ifhasanswer(answername);
-        System.out.println("%%%");
-        System.out.println(maps);
+
+      
         if(!CollectionUtils.isEmpty(maps)){
             httpResponseEntity.setCode("111");
         }else {
