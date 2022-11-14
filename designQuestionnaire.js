@@ -11,6 +11,8 @@ var startTime = '';
 var questionIdForChange = '';
 var questionStop = '';
 var questionName = getCookie('questionName');
+var username = getCookie('username');
+console.log(username);
 var questionContent = getCookie('questionContent');
 //判断cookie里有没有问卷id、项目id
 var aaa = 0;
@@ -945,6 +947,8 @@ function insertQuestion(that) {
 function editFinish() {
     getQuestion();
 	questionId = getCookie('questionId');
+
+	
     if (questionList.length == 0) {
         layer.msg("没有题不能保存");
     } else {
@@ -966,7 +970,6 @@ function editFinish() {
             'question': JSON.stringify(questionList), //所有的题目
             'questionTitle': questionTitles,
             'id': questionId,
-            'dataId': dataId,
             'questionName': questionName,
             'questionContent': questionContent,
         };
@@ -1495,4 +1498,10 @@ function judgeProjectId() {
     } else {
         bbb = 1;
     }
+}
+ function importquestions(){
+	var questionId = getCookie("questionId");
+	setCookie('questionId',questionId);
+	setCookie('userName',username);
+	window.open('importQuestions.html')
 }
