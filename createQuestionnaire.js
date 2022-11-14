@@ -273,10 +273,13 @@ function viewModal(questionId) {
 
 //编辑模板
 function editModal(questionId,questionName,questionContent) {
+	console.log(questionId)
     var qId = $.base64.encode(questionId);
 	setCookie("questionName",questionName);
 	setCookie("questionContent",questionContent);
-    var url = "designQuestionnaire.html?qId="+qId;//此处拼接内容
+	setCookie("questionId",questionId)
+	setCookie("modelId",questionId)
+    var url = "designModel.html?qId="+qId;//此处拼接内容
     // window.location.href = url;
     window.open(url)
 }
