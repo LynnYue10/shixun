@@ -169,7 +169,8 @@ function relatedQuestionnaireTableInit() {
         var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
             pageNum: params.pageNumber,
             pageSize: params.pageSize,
-			questionnaireName:$("#keyWord").val()
+			questionnaireName:$("#keyWord").val(),
+			username:getCookie('userName')
             // orderBy: params.sortName,
             // sort: params.sortOrder
         };
