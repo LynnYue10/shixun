@@ -1,10 +1,10 @@
 var persons = []; //传入调查人员信息
 var sendTime = "";
-var questionId = getCookie("questionId");
-
+var questionId = getCookie("questionnaireId");
+console.log("&&&&&"+getCookie('questionnaireId'))
 var dataId = getCookie("dataId");  // 在校生：2；毕业生：3；教师：4；用人单位：5
 var nameOfQuestionnaire = getCookie("nameOfQuestionnaire");
-
+var username = getCookie('userName')
 document.getElementById("questPeople").innerText = "调查人员信息 — " + nameOfQuestionnaire;
 document.getElementById("ctl02_ContentPlaceHolder1_InviteEmail1_hrefSend").innerText = "批量发送问卷 — " + nameOfQuestionnaire;
 var shortMessageGetTime = '0';
@@ -718,8 +718,6 @@ function layOutHold(falg) {
 		var groupname= $("#answerGroup").val();
 		var  sendsecond = document.getElementById("scheduledSecond").value;
 		var  sendtimes = document.getElementById("scheduledTimes").value;
-		console.log("11111"+sendsecond);
-		console.log("22222"+sendtimes);
         data = {
             "id": questionId,           //问卷id
             "releaseTime":sendTime,          //发送时间
@@ -765,7 +763,7 @@ function layOutHold(falg) {
 function getQrcode() {
     _$("#ctl02_ContentPlaceHolder1_imgQrcode").empty();
 
-    var url = "http://192.168.43.254:8085/pages/previewQuestionnaire.html?id=" + questionId;
+    var url = "http://127.0.0.1:8085/pages/previewQuestionnaire.html?id=" + questionId;
 
     document.getElementById('ctl02_ContentPlaceHolder1_txtLink').value = url;
 
@@ -820,6 +818,7 @@ function designQuestionnaire() {
         layer.msg("问卷处于运行状态或问卷已发布，不可设计问卷", {icon: 2})
     } else {
         _$.cookie("questionId", questionId);
+		setCookie('username',username)
 /*		setCookie("questionId",questionId);*/
 		console.log(questionId);
         window.open('designQuestionnaire.html')
@@ -864,4 +863,51 @@ function copyUrl2() {
     Url2.select(); // 选择对象
     document.execCommand("Copy"); // 执行浏览器复制命令
     layer.msg("已复制好，可贴粘。", {icon: 1, time: 1000});
+}
+
+function analyseQuestionnaire(){
+	var questionnaireId = questionId;
+	window.parent.open("analyseQuestionnaire.html?i=" + questionnaireId);
+}
+
+function stopQuestionnaire(){
+	console.log("idididid"+questionId);
+	layer.confirm('您确认要停止发布此问卷吗？', {
+        btn: ['确定', '取消'] //按钮
+    }, function () {
+ commonAjaxPost(false, "/queryQuestionnaireById", {id: questionId}, function (result) {
+        if (result.code === "666") {
+            var data = result.data;
+			if(data.groupname == '未发送'){
+				layer.msg("该问卷还未被发送。", {icon: 1, time: 1000});
+			}else{
+				
+				var da ={
+					"id" : data.id,
+					"groupname":'未发送',
+					"releaseTime":''
+				};
+			commonAjaxPost(true,'/modifySendQuestionnaireInfo',da,function(result){
+			if (result.code == '666') {
+       				 layer.msg(result.message, {icon: 1});
+        				setTimeout(function () {
+           					 window.location.href = 'questionnaireManage.html';
+       					 }, 1000)
+    			} else if (result.code == "333") {
+      				  layer.msg(result.message, {icon: 2});
+       				setTimeout(function () {
+        			window.location.href = 'login.html';
+       				 }, 1000)
+   			 } 
+			});
+			}
+			
+			
+        } else {
+            layer.msg(result.msg);
+        }
+    });
+    }, function () {
+    });
+
 }
