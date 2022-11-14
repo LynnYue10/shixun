@@ -293,7 +293,7 @@ function ModifyQuestionnaireIsDelete(questionnaireId){
     }
 
 
-		layer.confirm('您确认要删除此问卷吗？', {
+		layer.confirm('您确认要停止发布此问卷吗？', {
         btn: ['确定', '取消'] //按钮
     }, function () {
  commonAjaxPost(false, "/queryQuestionnaireById", {id: questionnaireId}, function (result) {
@@ -416,6 +416,7 @@ function changeQuestionnaireStatus (questionnaireId) {
 
 // 进入到发送、编辑、预览问卷界面
 function questionnaireDetail (questionnaireId) {
+	console.log("********"+questionnaireId)
     var dataId;
     var questionName;
     commonAjaxPost(false, "/judgeQuestionnaireById", {id: questionnaireId}, function (result) {
