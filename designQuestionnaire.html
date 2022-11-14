@@ -5,15 +5,37 @@
     <title>问卷设计</title>
     <link rel="stylesheet" href="../plugins/layui-v2.3.0/layui/css/layui.css">
     <link rel="stylesheet" type="text/css" href="answerQuestionCss/wenjuan_ht.css">
+    <style >
+    	.importquestion{
+   			background: #f17819;
+   			color: #ffffff !important;
+    		display: inline-block;
+    		height: 30px;
+    		line-height: 30px;
+    		text-decoration: none;
+    		vertical-align: middle;
+    		padding: 0 10px 0 15px;
+    		font-size: 16px;
+    		cursor: pointer;
+    		border-radius: 5px;
+    		border: 1px solid #f17819;
+    		margin: 14px 0 0 25px;
+    	}
+    
+    </style>
 </head>
 <body>
 <div class="all_660">
     <header>
         <div>
-            <button class="editFinish" onclick="editFinish()">完成编辑</button>
+         	
+            <button class="editFinish" onclick="editFinish()">完成编辑</button>  
+            <button class="importquestion" onclick="importquestions()">题库导入</button>
             <button class="preview" onclick="previewQuestion()">
                 <i class="design-icon design-preview"></i>预览
             </button>
+            
+           
         </div>
     </header>
     <div class="section">
