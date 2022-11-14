@@ -1,6 +1,7 @@
 package com.aim.questionnaire.dao;
 
 import java.util.List;
+
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
@@ -44,6 +45,8 @@ public interface QuestionnaireMapper {
       */
      int modifyQuestionnaireInfo(Questionnaire result);
      
+     int modifySendQuestionnaireInfo(Questionnaire result);
+     
      /**
       * 根据问卷id删除问卷
       * @param id
@@ -51,15 +54,9 @@ public interface QuestionnaireMapper {
       */
      void deleteQuestionnaireById(String id);
      
-     List<Map<String, Object>> queryUserList(String groupName,String questionName);
-     
-     List<Map<String, Object>> queryUserList1(String groupName,String questionName);
+     List<Map<String, Object>> queryUserList(String groupName);
      
      int updateByPrimaryKeySelective(Questionnaire questionnaire);
      
      int deleteModel(Questionnaire questionnaire);
-
-	String getQuesIdByName(String questionName);
-
-	Questionnaire getQuesById(String questionnaireId);
 }
