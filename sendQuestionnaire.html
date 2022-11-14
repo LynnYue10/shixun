@@ -108,14 +108,13 @@
                 <span class="items-name">发送问卷</span>
                 <em class="caret-left"></em>
             </a>
-            <a class="nav-items" href="reviewAnswerQuestions.html">
+            <a class="nav-items" href="javascript:void(0)" onclick="analyseQuestionnaire()">
                 <div class="items-box">
                     <i class="icon resultsData-icon"></i>
                 </div>
                 <br/>
-                <span class="items-name">分析&下载</span>
+                <span class="items-name">分析&数据大屏</span>
                 <em class="caret-left"></em>
-            </a>
         </div>
     </div>
     <div class="inside-wrapper">
@@ -556,7 +555,11 @@
                                                  style="margin-top:20px;" id="sendButton">
                                                 <a class="btn btn-blue-frame" href="javascript:void(0)"
                                                    style="color:#1ea0fa" onclick="layOutHold('true')">发送</a>
+                                                   
+                                                <a class="btn btn-blue-frame" href="javascript:void(0)"
+                                                   style="color:#1ea0fa" onclick="stopQuestionnaire()">停止发送</a>
                                             </div>
+                                            
                                         </div>
                                     </div>
                                 </div>
